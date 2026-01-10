@@ -4,6 +4,7 @@ require('dotenv').config();
 const connectDB = require('./config/connection');
 const userRouter = require('./routers/userRouter');
 const fileRouter = require('./routers/fileRouter');
+const portfolioRouter = require('./routers/portfolioRouter');
 
 const app = express();
 
@@ -18,6 +19,7 @@ connectDB();
 // Routes
 app.use('/api/auth', userRouter);
 app.use('/file', fileRouter);
+app.use('/api/portfolio', portfolioRouter);
 
 app.get('/', (req, res) => {
   res.send('Server is running');

@@ -1,5 +1,12 @@
 import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import ProfileDashboard from "./pages/ProfileDashboard";
 import PortfolioPreview from "./components/PortfolioPreview";
+import "./App.css";
 
 function App() {
   const [portfolioHTML, setPortfolioHTML] = useState("");
@@ -15,12 +22,22 @@ function App() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <button onClick={handleUpload}>Upload Resume</button>
+    <Router>
+      <div style={{ padding: "20px" }}>
+        <Navbar />
+        <button onClick={handleUpload}>Upload Resume</button>
 
-      {/* 👇 YAHAN PORTFOLIO DIKHEGA */}
-      <PortfolioPreview html={portfolioHTML} />
-    </div>
+        {/* 👇 YAHAN PORTFOLIO DIKHEGA */}
+        <PortfolioPreview html={portfolioHTML} />
+      </div>
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/profile/:id" element={<ProfileDashboard />} />
+      </Routes>
+    </Router>
   );
 }
 

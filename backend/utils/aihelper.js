@@ -1,6 +1,6 @@
 const { GoogleGenAI } = require("@google/genai");
 
-const ai = new GoogleGenAI({ apiKey: "AIzaSyCyWKSgs7dZCd4V91gkHb4KjwrKsRtGFFU" });
+const ai = new GoogleGenAI({ apiKey: "AIzaSyCtuuAoRHAg9xMgMeR1mlzGqcCZajNSWGg" });
 
 async function generatePortfolio(resumeText, existingHtml = null, mode = "new", template = "modern") {
   const templatePrompts = {

@@ -1,8 +1,10 @@
 const express = require('express')
 const multer = require('multer')
 
-const { generatePortfolio } = require('../utils/aihelper'); 
+const { generatePortfolio } = require('../utils/aihelper');
 const { extractTextFromPDF } = require('../utils/extract');
+const authMiddleware = require('../middleware/authMiddleware');
+const portfolioModel = require('../models/portfolioModel');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -18,7 +20,7 @@ const upload = multer({ storage: storage });
 
 const router = express.Router()
 
-router.post('/profile', upload.single('avatar'), async function (req, res, next) {
+router.post('/profile', authMiddleware, upload.single('avatar'), async function (req, res, next) {
   try {
     // Check if file was uploaded
     if (!req.file) {
@@ -29,13 +31,30 @@ router.post('/profile', upload.single('avatar'), async function (req, res, next)
     const extractedText = await extractTextFromPDF(req.file.path);
 
     // Generate portfolio HTML using Gemini
-    const portfolioHTML = await generatePortfolio(extractedText);
+    const generationMode = req.headers['x-generation-mode'] || 'new';
+    const template = req.headers['x-template'] || 'modern';
+    const existingHTML = req.headers['x-existing-html'];
+
+    const portfolioHTML = await generatePortfolio(extractedText, existingHTML, generationMode, template);
+
+    // Save portfolio to MongoDB
+    const portfolio = new portfolioModel({
+      userId: req.user.id,
+      title: `Generated Portfolio - ${new Date().toLocaleDateString()}`,
+      description: 'Automatically generated from resume',
+      content: portfolioHTML,
+      theme: 'light',
+      template: template
+    });
+
+    await portfolio.save();
 
     // Send the generated HTML as response
     res.status(200).json({
       success: true,
       html: portfolioHTML,
-      message: 'Portfolio generated successfully'
+      portfolioId: portfolio._id,
+      message: 'Portfolio generated and saved successfully'
     });
 
   } catch (error) {

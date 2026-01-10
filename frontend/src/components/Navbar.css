@@ -1,0 +1,79 @@
+/* ===== Profile Dropdown ===== */
+
+.ngf-user {
+  position: relative;
+}
+
+.ngf-user-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.ngf-user-btn:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+.ngf-avatar {
+  background: white;
+  color: #111;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: bold;
+}
+
+.ngf-username {
+  font-size: 14px;
+}
+
+.ngf-arrow {
+  font-size: 12px;
+}
+
+.ngf-dropdown {
+  position: absolute;
+  right: 0;
+  top: 120%;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  min-width: 210px;
+  overflow: hidden;
+  z-index: 50;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+
+.ngf-dropdown button {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #e5e7eb;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ngf-dropdown button:hover {
+  background: #1e293b;
+}
+
+.ngf-dropdown hr {
+  border: none;
+  border-top: 1px solid #334155;
+}
+
+.ngf-dropdown .logout {
+  color: #f87171;
+}
