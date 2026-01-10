@@ -1,7 +1,23 @@
 const express = require('express');
 const router = express.Router();
 const userModel = require('../models/userModel');
+const portfolioModel = require('../models/portfolioModel');
 const jwt = require('jsonwebtoken');
+
+// Middleware to verify token
+const authMiddleware = (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret_key');
+    req.user = decoded;
+    next();
+  } catch (err) {
+    res.status(401).json({ message: 'Invalid token' });
+  }
+};
 
 // SIGNUP
 router.post('/signup', async (req, res) => {
@@ -138,6 +154,64 @@ router.put('/update/:id', async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
     res.status(200).json({ message: 'User updated successfully', user });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: 'Something went wrong' });
+  }
+});
+
+// GET USER PROFILE WITH PORTFOLIOS
+router.get('/profile/:id', authMiddleware, async (req, res) => {
+  try {
+    const user = await userModel.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const portfolios = await portfolioModel.find({ userId: req.params.id });
+
+    res.status(200).json({
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        createdAt: user.createdAt
+      },
+      portfolios,
+      totalPortfolios: portfolios.length
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: 'Something went wrong' });
+  }
+});
+
+// UPDATE USER PROFILE
+router.put('/profile/update/:id', authMiddleware, async (req, res) => {
+  try {
+    if (req.user.id !== req.params.id) {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+
+    const { name, email } = req.body;
+    const user = await userModel.findByIdAndUpdate(
+      req.params.id,
+      { name, email },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({
+      message: 'Profile updated successfully',
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email
+      }
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: 'Something went wrong' });
