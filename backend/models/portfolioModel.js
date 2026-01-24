@@ -25,6 +25,19 @@ const portfolioSchema = new mongoose.Schema({
     type: String,
     default: 'modern'
   },
+  isPublic: {
+    type: Boolean,
+    default: false
+  },
+  shareToken: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
+  shareCount: {
+    type: Number,
+    default: 0
+  },
   createdAt: {
     type: Date,
     default: Date.now

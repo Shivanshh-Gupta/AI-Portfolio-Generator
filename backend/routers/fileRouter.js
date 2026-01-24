@@ -3,6 +3,7 @@ const multer = require('multer')
 
 const { generatePortfolio } = require('../utils/aihelper');
 const { extractTextFromPDF } = require('../utils/extract');
+const { wrapWithProfessionalStyling } = require('../utils/stylingWrapper');
 const authMiddleware = require('../middleware/authMiddleware');
 const portfolioModel = require('../models/portfolioModel');
 
@@ -11,7 +12,6 @@ const storage = multer.diskStorage({
     cb(null, './uploads')
   },
   filename: function (req, file, cb) {
-    // const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
     cb(null, file.originalname)
   }
 });
@@ -22,20 +22,33 @@ const router = express.Router()
 
 router.post('/profile', authMiddleware, upload.single('avatar'), async function (req, res, next) {
   try {
+    console.log('📄 Portfolio generation started...');
+
     // Check if file was uploaded
     if (!req.file) {
       return res.status(400).json({ error: 'No PDF file uploaded' });
     }
 
     // Extract text from PDF
+    console.log('📝 Extracting text from PDF...');
     const extractedText = await extractTextFromPDF(req.file.path);
+    console.log('✅ Text extracted, length:', extractedText.length);
 
     // Generate portfolio HTML using Gemini
     const generationMode = req.headers['x-generation-mode'] || 'new';
     const template = req.headers['x-template'] || 'modern';
     const existingHTML = req.headers['x-existing-html'];
 
-    const portfolioHTML = await generatePortfolio(extractedText, existingHTML, generationMode, template);
+    console.log('🤖 Generating portfolio with AI...');
+    console.log('Template:', template, 'Mode:', generationMode);
+
+    let portfolioHTML = await generatePortfolio(extractedText, existingHTML, generationMode, template);
+    console.log('✅ AI generated HTML, length:', portfolioHTML.length);
+
+    // Wrap with professional styling to ensure it looks good
+    console.log('🎨 Applying professional styling...');
+    portfolioHTML = wrapWithProfessionalStyling(portfolioHTML, template);
+    console.log('✅ Styling applied, final length:', portfolioHTML.length);
 
     // Save portfolio to MongoDB
     const portfolio = new portfolioModel({
@@ -48,6 +61,7 @@ router.post('/profile', authMiddleware, upload.single('avatar'), async function 
     });
 
     await portfolio.save();
+    console.log('💾 Portfolio saved to database');
 
     // Send the generated HTML as response
     res.status(200).json({
@@ -58,7 +72,7 @@ router.post('/profile', authMiddleware, upload.single('avatar'), async function 
     });
 
   } catch (error) {
-    console.error('Error:', error);
+    console.error('❌ Error:', error);
     res.status(500).json({ error: 'Failed to generate portfolio', details: error.message });
   }
 })

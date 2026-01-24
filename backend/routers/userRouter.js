@@ -3,6 +3,8 @@ const router = express.Router();
 const userModel = require('../models/userModel');
 const portfolioModel = require('../models/portfolioModel');
 const jwt = require('jsonwebtoken');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 // Middleware to verify token
 const authMiddleware = (req, res, next) => {
@@ -18,6 +20,49 @@ const authMiddleware = (req, res, next) => {
     res.status(401).json({ message: 'Invalid token' });
   }
 };
+
+// Configure Google OAuth Strategy
+passport.use(new GoogleStrategy({
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'dummy_secret',
+  callbackURL: "http://localhost:5000/api/auth/google/callback"
+},
+  async (accessToken, refreshToken, profile, done) => {
+    try {
+      // Check if user exists
+      let user = await userModel.findOne({ email: profile.emails[0].value });
+
+      if (!user) {
+        // Create new user
+        user = new userModel({
+          name: profile.displayName,
+          email: profile.emails[0].value,
+          googleId: profile.id,
+          avatar: profile.photos[0]?.value,
+          password: 'google_oauth_' + Math.random().toString(36) // Random password for OAuth users
+        });
+        await user.save();
+      }
+
+      return done(null, user);
+    } catch (err) {
+      return done(err, null);
+    }
+  }
+));
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await userModel.findById(id);
+    done(null, user);
+  } catch (err) {
+    done(err, null);
+  }
+});
 
 // SIGNUP
 router.post('/signup', async (req, res) => {
@@ -92,6 +137,42 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Something went wrong' });
   }
 });
+
+// GOOGLE OAUTH - Initiate
+router.get('/google',
+  passport.authenticate('google', {
+    scope: ['profile', 'email'],
+    session: false
+  })
+);
+
+// GOOGLE OAUTH - Callback
+router.get('/google/callback',
+  passport.authenticate('google', {
+    failureRedirect: 'http://localhost:3000/login',
+    session: false
+  }),
+  (req, res) => {
+    try {
+      // Generate JWT token
+      const token = jwt.sign(
+        { id: req.user._id },
+        process.env.JWT_SECRET || 'secret_key',
+        { expiresIn: '7d' }
+      );
+
+      // Redirect to frontend with token
+      res.redirect(`http://localhost:3000/image?token=${token}&user=${encodeURIComponent(JSON.stringify({
+        id: req.user._id,
+        name: req.user.name,
+        email: req.user.email
+      }))}`);
+    } catch (err) {
+      console.log(err);
+      res.redirect('http://localhost:3000/login?error=auth_failed');
+    }
+  }
+);
 
 // GET ALL USERS
 router.get('/getall', async (req, res) => {

@@ -133,4 +133,85 @@ router.delete('/delete/:id', authMiddleware, async (req, res) => {
   }
 });
 
+// SHARE PORTFOLIO - Generate share link
+router.post('/share/:id', authMiddleware, async (req, res) => {
+  try {
+    const portfolio = await portfolioModel.findById(req.params.id);
+
+    if (!portfolio) {
+      return res.status(404).json({ message: 'Portfolio not found' });
+    }
+
+    if (portfolio.userId.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+
+    // Generate unique share token if not exists
+    if (!portfolio.shareToken) {
+      const crypto = require('crypto');
+      portfolio.shareToken = crypto.randomBytes(16).toString('hex');
+    }
+
+    portfolio.isPublic = true;
+    await portfolio.save();
+
+    const shareUrl = `${req.protocol}://${req.get('host')}/shared/${portfolio.shareToken}`;
+
+    res.status(200).json({
+      message: 'Portfolio is now public',
+      shareUrl,
+      shareToken: portfolio.shareToken
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: 'Something went wrong' });
+  }
+});
+
+// UNSHARE PORTFOLIO - Make private
+router.post('/unshare/:id', authMiddleware, async (req, res) => {
+  try {
+    const portfolio = await portfolioModel.findById(req.params.id);
+
+    if (!portfolio) {
+      return res.status(404).json({ message: 'Portfolio not found' });
+    }
+
+    if (portfolio.userId.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+
+    portfolio.isPublic = false;
+    await portfolio.save();
+
+    res.status(200).json({ message: 'Portfolio is now private' });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: 'Something went wrong' });
+  }
+});
+
+// GET SHARED PORTFOLIO BY TOKEN (Public access)
+router.get('/shared/:token', async (req, res) => {
+  try {
+    const portfolio = await portfolioModel.findOne({
+      shareToken: req.params.token,
+      isPublic: true
+    });
+
+    if (!portfolio) {
+      return res.status(404).json({ message: 'Portfolio not found or not public' });
+    }
+
+    // Increment share count
+    portfolio.shareCount += 1;
+    await portfolio.save();
+
+    res.status(200).json(portfolio);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: 'Something went wrong' });
+  }
+});
+
 module.exports = router;

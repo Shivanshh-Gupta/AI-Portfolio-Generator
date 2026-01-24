@@ -1,1 +1,19 @@
+# Zip files
 /backend.zip
+
+# Environment files (contain secrets - never commit these!)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# Node modules
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
