@@ -3,11 +3,8 @@ const router = express.Router();
 const userModel = require('../models/userModel');
 const portfolioModel = require('../models/portfolioModel');
 const jwt = require('jsonwebtoken');
-<<<<<<< HEAD
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-=======
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
 
 // Middleware to verify token
 const authMiddleware = (req, res, next) => {
@@ -24,7 +21,6 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-<<<<<<< HEAD
 // Configure Google OAuth Strategy
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
@@ -68,8 +64,6 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-=======
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
 // SIGNUP
 router.post('/signup', async (req, res) => {
   try {
@@ -144,7 +138,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 // GOOGLE OAUTH - Initiate
 router.get('/google',
   passport.authenticate('google', {
@@ -181,8 +174,6 @@ router.get('/google/callback',
   }
 );
 
-=======
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
 // GET ALL USERS
 router.get('/getall', async (req, res) => {
   try {
