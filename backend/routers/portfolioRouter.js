@@ -133,6 +133,7 @@ router.delete('/delete/:id', authMiddleware, async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 // SHARE PORTFOLIO - Generate share link
 router.post('/share/:id', authMiddleware, async (req, res) => {
   try {
@@ -214,4 +215,6 @@ router.get('/shared/:token', async (req, res) => {
   }
 });
 
+=======
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
 module.exports = router;

@@ -1,7 +1,11 @@
 "use client"
 
+<<<<<<< HEAD
 import { useState, useEffect, useRef } from "react"
 import { useSearchParams } from "next/navigation"
+=======
+import { useState, useEffect } from "react"
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
 import PortfolioPreview from "@/components/PortfolioPreview"
 import { htmlThemes } from "@/config/htmlThemes"
 import { portfolioTemplates } from "@/config/portfolioTemplates"
@@ -13,8 +17,11 @@ export default function ImagePage() {
 }
 
 function ImageUploadComponent() {
+<<<<<<< HEAD
   const searchParams = useSearchParams()
   const dropdownRef = useRef(null)
+=======
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
   const [selectedImage, setSelectedImage] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [portfolioHtml, setPortfolioHtml] = useState(null)
@@ -28,6 +35,7 @@ function ImageUploadComponent() {
   const [savedPortfolios, setSavedPortfolios] = useState([])
   const [showPortfoliosList, setShowPortfoliosList] = useState(false)
   const [currentPortfolioId, setCurrentPortfolioId] = useState(null)
+<<<<<<< HEAD
   const [showShareModal, setShowShareModal] = useState(false)
   const [shareUrl, setShareUrl] = useState("")
   const [currentSharePortfolio, setCurrentSharePortfolio] = useState(null)
@@ -84,6 +92,8 @@ function ImageUploadComponent() {
       document.removeEventListener('click', handleClickOutside)
     }
   }, [showProfileDropdown])
+=======
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
 
   const handleUpload = async () => {
     if (!selectedImage) return alert("Select PDF first")
@@ -103,6 +113,7 @@ function ImageUploadComponent() {
           ...(generationMode === "update" && portfolioHtml && { "X-Existing-HTML": portfolioHtml }),
         },
       })
+<<<<<<< HEAD
 
       const data = await res.json()
 
@@ -116,6 +127,14 @@ function ImageUploadComponent() {
     } catch (err) {
       console.error(err)
       alert(err.message || "Generation failed")
+=======
+      const data = await res.json()
+      setPortfolioHtml(data.html)
+      setGenerationMode("new")
+      setShowTemplates(false)
+    } catch {
+      alert("Generation failed")
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
     } finally {
       setIsLoading(false)
     }
@@ -159,6 +178,7 @@ function ImageUploadComponent() {
 
     let finalHTML = portfolioHtml
 
+<<<<<<< HEAD
     // DON'T remove existing styles - keep the professional styling!
     // Just add theme CSS variables at the beginning
 
@@ -172,6 +192,51 @@ ${themeCSS}
       finalHTML = finalHTML.replace("<head>", `<head>\n${themeStyle}`)
     } else if (finalHTML.includes("<!DOCTYPE html>")) {
       finalHTML = finalHTML.replace("<!DOCTYPE html>", `<!DOCTYPE html>\n${themeStyle}`)
+=======
+    finalHTML = finalHTML.replace(/<style>[\s\S]*?<\/style>/g, "")
+
+    const themeStyle = `<style>
+:root {
+  ${themeCSS}
+}
+
+/* Override all colors with theme variables */
+html, body {
+  background: var(--bg-color) !important;
+  color: var(--text-color) !important;
+}
+
+* {
+  color: var(--text-color) !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--primary-color) !important;
+}
+
+a {
+  color: var(--primary-color) !important;
+}
+
+button, .btn, [role="button"] {
+  background-color: var(--primary-color) !important;
+  color: var(--bg-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+/* Card & section backgrounds */
+.card, section, article, [class*="container"] {
+  background: var(--bg-color) !important;
+  color: var(--text-color) !important;
+  border-color: var(--primary-color) !important;
+}
+</style>`
+
+    if (finalHTML.includes("</head>")) {
+      finalHTML = finalHTML.replace("</head>", `${themeStyle}</head>`)
+    } else if (finalHTML.includes("<body>")) {
+      finalHTML = finalHTML.replace("<body>", `<head>${themeStyle}</head><body>`)
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
     } else {
       finalHTML = themeStyle + finalHTML
     }
@@ -181,7 +246,11 @@ ${themeCSS}
 
     const a = document.createElement("a")
     a.href = url
+<<<<<<< HEAD
     a.download = `portfolio-${theme}-${Date.now()}.html`
+=======
+    a.download = `portfolio-${theme}.html`
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
     a.click()
 
     URL.revokeObjectURL(url)
@@ -278,6 +347,7 @@ ${themeCSS}
     }
   }
 
+<<<<<<< HEAD
   const sharePortfolio = async (portfolioId) => {
     try {
       const res = await fetch(`http://localhost:5000/api/portfolio/share/${portfolioId}`, {
@@ -427,11 +497,33 @@ ${themeCSS}
       </div>
 
       <div className={`max-w-6xl mx-auto grid md:grid-cols-3 gap-8 relative z-10 transition-all duration-1000 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+=======
+  // Load portfolios on mount
+  useEffect(() => {
+    fetchPortfolios()
+  }, [])
+
+  return (
+    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 px-4 py-16 text-white">
+
+      {/* Header Section */}
+      <div className="max-w-6xl mx-auto mb-16">
+        <div className="text-center">
+          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
+            Portfolio Generator
+          </h1>
+          <p className="text-gray-300 text-lg">Transform your resume into a stunning portfolio website</p>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
 
         {/* Left Column - Upload Section */}
         <div className="md:col-span-1">
           <div className="sticky top-8 space-y-6">
             {/* File Upload Card */}
+<<<<<<< HEAD
             <div className="group bg-gradient-to-br from-gray-800/60 via-gray-700/50 to-gray-900/60 border border-gray-500/30 rounded-2xl p-8 backdrop-blur-xl hover:border-gray-400/60 transition-all duration-500 hover:shadow-2xl hover:shadow-gray-500/30 hover:scale-[1.02] animate-scale-in relative overflow-hidden">
               {/* Shimmer effect on hover */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
@@ -441,6 +533,13 @@ ${themeCSS}
                 <div className="mb-4 text-5xl group-hover:scale-110 group-hover:animate-bounce transition-transform duration-500">📄</div>
                 <h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Upload Resume</h2>
                 <p className="text-gray-300 text-sm mb-6">PDF format only • Max 10MB</p>
+=======
+            <div className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-2xl p-8 backdrop-blur-sm hover:border-blue-400/60 transition">
+              <div className="text-center">
+                <div className="mb-4 text-4xl">📄</div>
+                <h2 className="text-xl font-bold mb-2">Upload Resume</h2>
+                <p className="text-gray-300 text-sm mb-6">PDF format only</p>
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
 
                 <label className="relative block cursor-pointer">
                   <input
@@ -449,24 +548,34 @@ ${themeCSS}
                     onChange={(e) => setSelectedImage(e.target.files[0])}
                     className="hidden"
                   />
+<<<<<<< HEAD
                   <div className="bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-600 hover:to-gray-800 text-white py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-gray-500/50 relative overflow-hidden group">
                     <span className="relative z-10">Choose File</span>
                     <div className="absolute inset-0 bg-gradient-to-r from-gray-900 to-gray-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+=======
+                  <div className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-3 rounded-xl font-semibold transition transform hover:scale-105">
+                    Choose File
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
                   </div>
                 </label>
 
                 {selectedImage && (
+<<<<<<< HEAD
                   <div className="mt-4 p-3 bg-white/10 border border-white/30 rounded-lg animate-scale-in">
                     <p className="text-white text-sm font-semibold truncate flex items-center justify-center gap-2">
                       <span className="animate-heartbeat">✓</span>
                       <span>{selectedImage.name}</span>
                     </p>
                   </div>
+=======
+                  <p className="text-green-400 text-sm mt-3 truncate">✓ {selectedImage.name}</p>
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
                 )}
               </div>
             </div>
 
             {/* Template Selector */}
+<<<<<<< HEAD
             <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/60 border border-slate-500/30 rounded-2xl p-6 backdrop-blur-xl hover:border-slate-400/50 transition-all duration-500 hover:shadow-xl hover:shadow-slate-500/20 animate-slide-in-left" style={{ animationDelay: '100ms' }}>
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-2xl">🎨</span>
@@ -482,6 +591,20 @@ ${themeCSS}
 
               {showTemplates && (
                 <div className="mt-4 space-y-2 max-h-60 overflow-y-auto custom-scrollbar animate-slide-up">
+=======
+            <div className="bg-gradient-to-br from-slate-800/50 to-slate-700/50 border border-slate-600/30 rounded-2xl p-6 backdrop-blur-sm">
+              <p className="text-sm font-semibold text-gray-300 mb-4">Portfolio Template</p>
+              <button
+                onClick={() => setShowTemplates(!showTemplates)}
+                className="w-full py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold transition text-left flex items-center justify-between"
+              >
+                <span>{portfolioTemplates[selectedTemplate]?.name || "Modern"}</span>
+                <span className="text-xl">{showTemplates ? "▼" : "▶"}</span>
+              </button>
+
+              {showTemplates && (
+                <div className="mt-4 space-y-2 max-h-60 overflow-y-auto">
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
                   {Object.entries(portfolioTemplates).map(([key, template]) => (
                     <button
                       key={key}
@@ -490,12 +613,21 @@ ${themeCSS}
                         if (portfolioHtml) applyTemplate(key)
                       }}
                       disabled={isLoading}
+<<<<<<< HEAD
                       className={`w-full p-4 rounded-lg text-left transition-all duration-300 transform hover:scale-[1.02] ${selectedTemplate === key
                         ? "bg-gradient-to-r from-gray-600 to-gray-800 text-white shadow-lg shadow-gray-500/30"
                         : "bg-slate-700/80 hover:bg-slate-600 text-gray-200 hover:shadow-md"
                         } disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
                       <div className="font-bold">{template.name}</div>
+=======
+                      className={`w-full p-4 rounded-lg text-left transition ${selectedTemplate === key
+                        ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg"
+                        : "bg-slate-700 hover:bg-slate-600 text-gray-200"
+                        } disabled:opacity-50`}
+                    >
+                      <div className="font-semibold">{template.name}</div>
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
                       <div className="text-xs text-gray-300 mt-1">{template.description}</div>
                     </button>
                   ))}
@@ -505,6 +637,7 @@ ${themeCSS}
 
             {/* Mode Selection */}
             {portfolioHtml && (
+<<<<<<< HEAD
               <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/60 border border-slate-500/30 rounded-2xl p-6 backdrop-blur-xl hover:border-slate-400/50 transition-all duration-500 hover:shadow-xl animate-slide-in-right" style={{ animationDelay: '200ms' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <span className="text-2xl">⚙️</span>
@@ -516,15 +649,31 @@ ${themeCSS}
                     className={`w-full py-3 px-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 ${generationMode === "new"
                       ? "bg-gradient-to-r from-gray-600 to-gray-800 text-white shadow-lg shadow-gray-500/50"
                       : "bg-slate-700/80 text-gray-300 hover:bg-slate-600 hover:shadow-md"
+=======
+              <div className="bg-gradient-to-br from-slate-800/50 to-slate-700/50 border border-slate-600/30 rounded-2xl p-6 backdrop-blur-sm">
+                <p className="text-sm font-semibold text-gray-300 mb-4">Generation Mode</p>
+                <div className="space-y-3">
+                  <button
+                    onClick={() => setGenerationMode("new")}
+                    className={`w-full py-3 rounded-xl font-semibold transition transform hover:scale-105 ${generationMode === "new"
+                      ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/50"
+                      : "bg-slate-700 text-gray-300 hover:bg-slate-600"
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
                       }`}
                   >
                     ✨ New Design
                   </button>
                   <button
                     onClick={() => setGenerationMode("update")}
+<<<<<<< HEAD
                     className={`w-full py-3 px-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 ${generationMode === "update"
                       ? "bg-gradient-to-r from-gray-700 to-black text-white shadow-lg shadow-gray-500/50"
                       : "bg-slate-700/80 text-gray-300 hover:bg-slate-600 hover:shadow-md"
+=======
+                    className={`w-full py-3 rounded-xl font-semibold transition transform hover:scale-105 ${generationMode === "update"
+                      ? "bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg shadow-purple-500/50"
+                      : "bg-slate-700 text-gray-300 hover:bg-slate-600"
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
                       }`}
                   >
                     🎨 Update Design
@@ -537,6 +686,7 @@ ${themeCSS}
             <button
               onClick={handleUpload}
               disabled={isLoading || !selectedImage}
+<<<<<<< HEAD
               className={`w-full py-5 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 animate-scale-in relative overflow-hidden ${isLoading || !selectedImage
                 ? "bg-gray-600 text-gray-400 cursor-not-allowed"
                 : "bg-gradient-to-r from-gray-600 via-gray-700 to-gray-800 text-white hover:from-gray-500 hover:via-gray-600 hover:to-gray-700 shadow-xl shadow-gray-500/50 hover:shadow-2xl hover:shadow-gray-500/60 animate-glow"
@@ -553,11 +703,26 @@ ${themeCSS}
                   <span className="animate-bounce">{generationMode === "update" ? "🎨" : "✨"}</span>
                   <span>{generationMode === "update" ? "Update" : "Generate"} Portfolio</span>
                 </span>
+=======
+              className={`w-full py-4 rounded-xl font-bold text-lg transition transform hover:scale-105 ${isLoading || !selectedImage
+                ? "bg-gray-600 text-gray-400 cursor-not-allowed"
+                : "bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 shadow-lg shadow-green-500/50"
+                }`}
+            >
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="animate-spin">⚙️</span>
+                  Generating...
+                </span>
+              ) : (
+                `${generationMode === "update" ? "🎨 Update" : "✨ Generate"} Portfolio`
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
               )}
             </button>
 
             {/* Theme Selector */}
             {portfolioHtml && (
+<<<<<<< HEAD
               <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/60 border border-slate-500/30 rounded-2xl p-6 backdrop-blur-xl hover:border-slate-400/50 transition-all duration-500 hover:shadow-xl animate-slide-in-left" style={{ animationDelay: '400ms' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <span className="text-2xl">🌈</span>
@@ -625,6 +790,20 @@ ${themeCSS}
                     <option value="ruby">💎 Ruby</option>
                     <option value="sapphire">💠 Sapphire</option>
                   </optgroup>
+=======
+              <div className="bg-gradient-to-br from-slate-800/50 to-slate-700/50 border border-slate-600/30 rounded-2xl p-6 backdrop-blur-sm">
+                <p className="text-sm font-semibold text-gray-300 mb-4">Choose Theme</p>
+                <select
+                  value={theme}
+                  onChange={(e) => setTheme(e.target.value)}
+                  className="w-full bg-slate-700 border border-slate-600 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-blue-400 transition"
+                >
+                  <option value="light">🌞 Light</option>
+                  <option value="dark">🌙 Dark</option>
+                  <option value="valentine">💖 Valentine</option>
+                  <option value="halloween">🎃 Halloween</option>
+                  <option value="sunset">🌅 Sunset</option>
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
                 </select>
               </div>
             )}
@@ -633,6 +812,7 @@ ${themeCSS}
             {portfolioHtml && (
               <button
                 onClick={downloadHTML}
+<<<<<<< HEAD
                 className="w-full py-5 rounded-xl bg-gradient-to-r from-gray-700 via-gray-800 to-black hover:from-gray-600 hover:via-gray-700 hover:to-gray-900 text-white font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl shadow-gray-500/50 hover:shadow-2xl hover:shadow-gray-500/60 animate-slide-in-right relative overflow-hidden group"
                 style={{ animationDelay: '500ms' }}
               >
@@ -641,6 +821,11 @@ ${themeCSS}
                   <span className="group-hover:animate-bounce">⬇️</span>
                   <span>Download HTML</span>
                 </span>
+=======
+                className="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-bold text-lg transition transform hover:scale-105 shadow-lg shadow-emerald-500/50"
+              >
+                ⬇️ Download HTML
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
               </button>
             )}
 
@@ -648,6 +833,7 @@ ${themeCSS}
             {portfolioHtml && (
               <button
                 onClick={() => setShowSaveModal(true)}
+<<<<<<< HEAD
                 className="w-full py-5 rounded-xl bg-gradient-to-r from-gray-600 via-gray-700 to-gray-900 hover:from-gray-500 hover:via-gray-600 hover:to-gray-800 text-white font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl shadow-gray-500/50 hover:shadow-2xl hover:shadow-gray-500/60 animate-slide-in-left relative overflow-hidden group"
                 style={{ animationDelay: '600ms' }}
               >
@@ -671,12 +857,18 @@ ${themeCSS}
                   <span className="group-hover:animate-bounce">🔗</span>
                   <span>Share Portfolio</span>
                 </span>
+=======
+                className="w-full py-4 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-bold text-lg transition transform hover:scale-105 shadow-lg shadow-blue-500/50"
+              >
+                💾 Save Portfolio
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
               </button>
             )}
 
             {/* My Portfolios Button */}
             <button
               onClick={() => setShowPortfoliosList(!showPortfoliosList)}
+<<<<<<< HEAD
               className="w-full py-5 rounded-xl bg-gradient-to-r from-gray-700 via-gray-800 to-black hover:from-gray-600 hover:via-gray-700 hover:to-gray-900 text-white font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl shadow-gray-500/50 hover:shadow-2xl hover:shadow-gray-500/60 animate-slide-in-left relative overflow-hidden group"
               style={{ animationDelay: '800ms' }}
             >
@@ -685,12 +877,18 @@ ${themeCSS}
                 <span className="group-hover:animate-bounce">📂</span>
                 <span>My Portfolios ({savedPortfolios.length})</span>
               </span>
+=======
+              className="w-full py-4 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold text-lg transition transform hover:scale-105 shadow-lg shadow-purple-500/50"
+            >
+              📂 My Portfolios ({savedPortfolios.length})
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
             </button>
           </div>
         </div>
 
         {/* Right Column - Preview */}
         {portfolioHtml && (
+<<<<<<< HEAD
           <div className={`md:col-span-2 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <div className="bg-gradient-to-br from-slate-800/40 to-slate-700/40 border border-gray-500/30 rounded-2xl overflow-hidden backdrop-blur-xl shadow-2xl hover:shadow-gray-500/20 transition-all duration-500 hover:border-gray-400/50">
               <div className="bg-gradient-to-r from-gray-800/30 via-gray-700/20 to-gray-900/30 px-6 py-5 border-b border-gray-500/30 backdrop-blur-sm">
@@ -706,6 +904,12 @@ ${themeCSS}
                     <div className="w-3 h-3 rounded-full bg-gray-600 animate-pulse" style={{ animationDelay: '0.4s' }}></div>
                   </div>
                 </div>
+=======
+          <div className="md:col-span-2">
+            <div className="bg-slate-800/30 border border-slate-600/30 rounded-2xl overflow-hidden backdrop-blur-sm shadow-2xl">
+              <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 px-6 py-4 border-b border-slate-600/30">
+                <p className="font-semibold text-gray-200">📱 Live Preview ({theme})</p>
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
               </div>
               <div className="overflow-hidden rounded-b-2xl">
                 <PortfolioPreview html={portfolioHtml} theme={theme} key={theme} />
@@ -717,9 +921,15 @@ ${themeCSS}
 
       {/* Save Modal */}
       {showSaveModal && (
+<<<<<<< HEAD
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
           <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-gray-500/30 rounded-2xl p-8 max-w-md w-full shadow-2xl animate-scale-in">
             <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+=======
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-blue-500/30 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+            <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
               💾 Save Portfolio
             </h2>
 
@@ -731,7 +941,11 @@ ${themeCSS}
                   value={saveTitle}
                   onChange={(e) => setSaveTitle(e.target.value)}
                   placeholder="My Awesome Portfolio"
+<<<<<<< HEAD
                   className="w-full bg-slate-700 border border-slate-600 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-gray-400 transition"
+=======
+                  className="w-full bg-slate-700 border border-slate-600 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-blue-400 transition"
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
                 />
               </div>
 
@@ -742,7 +956,11 @@ ${themeCSS}
                   onChange={(e) => setSaveDescription(e.target.value)}
                   placeholder="A brief description of this portfolio..."
                   rows={3}
+<<<<<<< HEAD
                   className="w-full bg-slate-700 border border-slate-600 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-gray-400 transition resize-none"
+=======
+                  className="w-full bg-slate-700 border border-slate-600 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-blue-400 transition resize-none"
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
                 />
               </div>
 
@@ -753,13 +971,21 @@ ${themeCSS}
                     setSaveTitle("")
                     setSaveDescription("")
                   }}
+<<<<<<< HEAD
                   className="flex-1 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold transition transform hover:scale-105"
+=======
+                  className="flex-1 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold transition"
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
                 >
                   Cancel
                 </button>
                 <button
                   onClick={savePortfolio}
+<<<<<<< HEAD
                   className="flex-1 py-3 rounded-xl bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-500 hover:to-gray-700 text-white font-semibold transition transform hover:scale-105 shadow-lg shadow-gray-500/30 hover:shadow-xl hover:shadow-gray-500/50"
+=======
+                  className="flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-semibold transition transform hover:scale-105"
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
                 >
                   Save
                 </button>
@@ -769,6 +995,7 @@ ${themeCSS}
         </div>
       )}
 
+<<<<<<< HEAD
       {/* Share Modal */}
       {showShareModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
@@ -820,6 +1047,14 @@ ${themeCSS}
           <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-gray-500/30 rounded-2xl p-8 max-w-3xl w-full max-h-[80vh] overflow-hidden shadow-2xl flex flex-col animate-slide-up">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+=======
+      {/* Portfolios List Modal */}
+      {showPortfoliosList && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-purple-500/30 rounded-2xl p-8 max-w-3xl w-full max-h-[80vh] overflow-hidden shadow-2xl flex flex-col">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
                 📂 My Portfolios
               </h2>
               <button
@@ -838,12 +1073,20 @@ ${themeCSS}
                   <p className="text-sm mt-2">Generate and save your first portfolio!</p>
                 </div>
               ) : (
+<<<<<<< HEAD
                 savedPortfolios.map((portfolio, index) => (
                   <div
                     key={portfolio._id}
                     className={`bg-slate-700/50 border rounded-xl p-5 hover:border-gray-400/50 transition hover:scale-[1.02] hover:shadow-lg hover:shadow-gray-500/20 animate-fade-in-scale ${currentPortfolioId === portfolio._id ? "border-gray-400 animate-glow" : "border-slate-600/30"
                       }`}
                     style={{ animationDelay: `${index * 50}ms` }}
+=======
+                savedPortfolios.map((portfolio) => (
+                  <div
+                    key={portfolio._id}
+                    className={`bg-slate-700/50 border rounded-xl p-5 hover:border-purple-400/50 transition ${currentPortfolioId === portfolio._id ? "border-purple-400" : "border-slate-600/30"
+                      }`}
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
@@ -851,6 +1094,7 @@ ${themeCSS}
                         {portfolio.description && (
                           <p className="text-gray-400 text-sm mb-2">{portfolio.description}</p>
                         )}
+<<<<<<< HEAD
                         <div className="flex gap-3 text-xs text-gray-500 flex-wrap">
                           <span>🎨 {portfolio.template || "modern"}</span>
                           <span>🌈 {portfolio.theme || "light"}</span>
@@ -886,6 +1130,25 @@ ${themeCSS}
                         <button
                           onClick={() => deletePortfolio(portfolio._id)}
                           className="px-4 py-2 rounded-lg bg-gray-700/80 hover:bg-gray-800 text-white text-sm font-semibold transition transform hover:scale-105 hover:animate-shake shadow-md hover:shadow-lg"
+=======
+                        <div className="flex gap-3 text-xs text-gray-500">
+                          <span>🎨 {portfolio.template || "modern"}</span>
+                          <span>🌈 {portfolio.theme || "light"}</span>
+                          <span>📅 {new Date(portfolio.createdAt).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => loadPortfolio(portfolio)}
+                          className="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white text-sm font-semibold transition transform hover:scale-105"
+                        >
+                          Load
+                        </button>
+                        <button
+                          onClick={() => deletePortfolio(portfolio._id)}
+                          className="px-4 py-2 rounded-lg bg-red-500/80 hover:bg-red-600 text-white text-sm font-semibold transition"
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
                         >
                           Delete
                         </button>
@@ -898,6 +1161,7 @@ ${themeCSS}
           </div>
         </div>
       )}
+<<<<<<< HEAD
 
       {/* CSS Animations */}
       <style jsx>{`
@@ -1445,3 +1709,8 @@ const ChangePasswordModal = ({ onClose }) => {
 }
 
 
+=======
+    </main>
+  )
+}
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970

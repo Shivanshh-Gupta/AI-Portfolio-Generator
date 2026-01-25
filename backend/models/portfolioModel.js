@@ -25,6 +25,7 @@ const portfolioSchema = new mongoose.Schema({
     type: String,
     default: 'modern'
   },
+<<<<<<< HEAD
   isPublic: {
     type: Boolean,
     default: false
@@ -38,6 +39,8 @@ const portfolioSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+=======
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
   createdAt: {
     type: Date,
     default: Date.now

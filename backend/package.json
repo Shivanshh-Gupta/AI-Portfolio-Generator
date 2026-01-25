@@ -15,6 +15,7 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
+<<<<<<< HEAD
     "google-auth-library": "^10.5.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.19.1",
@@ -22,6 +23,12 @@
     "nodemon": "^3.1.10",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+=======
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.19.1",
+    "multer": "^2.0.2",
+    "nodemon": "^3.1.10",
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
     "pdf-parse": "^2.2.11"
   }
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 @import "tailwindcss";
 
 /* Theme Variables */
@@ -478,3 +479,6 @@ img[loading="lazy"].loaded {
 .animate-reveal {
     animation: reveal 0.5s ease-out;
 }
+=======
+@import "tailwindcss";
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970

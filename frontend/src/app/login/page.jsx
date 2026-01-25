@@ -10,11 +10,14 @@ const Login = () => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+<<<<<<< HEAD
   const [isVisible, setIsVisible] = useState(false)
 
   React.useEffect(() => {
     setIsVisible(true)
   }, [])
+=======
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
 
   const validationSchema = Yup.object({
     email: Yup.string().email("Invalid email").required("Email is required"),
@@ -62,6 +65,7 @@ const Login = () => {
   }
 
   return (
+<<<<<<< HEAD
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-gray-950 px-4 py-8 relative overflow-hidden">
 
       {/* Animated Background Blobs */}
@@ -289,6 +293,100 @@ const Login = () => {
           animation: shake 0.5s ease-in-out;
         }
       `}</style>
+=======
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-slate-900 to-slate-800 px-4">
+      <div className="w-full max-w-md bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-8">
+
+        {/* Header */}
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-extrabold text-gray-900">
+            Sign in to{" "}
+            <span className="text-blue-600">NextgenFolio AI</span>
+          </h1>
+          <p className="mt-2 text-sm text-gray-600">
+            Don&apos;t have an account?{" "}
+            <a href="/signup" className="text-blue-600 font-medium hover:underline">
+              Sign up
+            </a>
+          </p>
+        </div>
+
+        {/* 🔥 GOOGLE SIGN IN */}
+        <GoogleAuthButton
+          label="Sign in with Google"
+          onClick={handleGoogleLogin}
+        />
+
+        {/* Divider */}
+        <div className="flex items-center my-4 text-xs text-gray-400 uppercase">
+          <div className="flex-1 h-px bg-gray-300" />
+          <span className="px-3">or</span>
+          <div className="flex-1 h-px bg-gray-300" />
+        </div>
+
+        {/* Error */}
+        {error && (
+          <div className="mb-4 p-3 rounded-lg bg-red-100 text-red-700 text-sm">
+            {error}
+          </div>
+        )}
+
+        {/* Form */}
+        <form onSubmit={loginForm.handleSubmit} className="space-y-4">
+
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Email address
+            </label>
+            <input
+              type="email"
+              name="email"
+              onChange={loginForm.handleChange}
+              onBlur={loginForm.handleBlur}
+              value={loginForm.values.email}
+              placeholder="you@example.com"
+              className="mt-1 w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            />
+            {loginForm.touched.email && loginForm.errors.email && (
+              <p className="text-xs text-red-500 mt-1">
+                {loginForm.errors.email}
+              </p>
+            )}
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
+            <input
+              type="password"
+              name="password"
+              onChange={loginForm.handleChange}
+              onBlur={loginForm.handleBlur}
+              value={loginForm.values.password}
+              placeholder="••••••••"
+              className="mt-1 w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            />
+            {loginForm.touched.password && loginForm.errors.password && (
+              <p className="text-xs text-red-500 mt-1">
+                {loginForm.errors.password}
+              </p>
+            )}
+          </div>
+
+          {/* Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-500 transition disabled:opacity-50"
+          >
+            {loading ? "Signing in..." : "Sign in"}
+          </button>
+        </form>
+      </div>
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
     </main>
   )
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 'use client';
 import { useEffect, useState } from 'react';
 
@@ -24,28 +25,53 @@ export default function HomePage() {
 
           {/* Logo with gradient */}
           <div className="text-2xl font-bold tracking-wide bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent animate-gradient">
+=======
+export default function HomePage() {
+  return (
+    <main className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-800 text-white">
+
+      {/* NAVBAR */}
+      <header className="sticky top-0 z-50 backdrop-blur bg-black/60 border-b border-gray-800">
+        <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          
+          {/* Logo */}
+          <div className="text-xl font-bold tracking-wide">
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
             NextgenFolio<span className="text-gray-400"> AI</span>
           </div>
 
           {/* Links */}
           <div className="hidden md:flex items-center gap-8 text-gray-300">
+<<<<<<< HEAD
             <a href="/" className="hover:text-white transition-all duration-300 hover:scale-110">Home</a>
             <a href="#how-it-works" className="hover:text-white transition-all duration-300 hover:scale-110">How it Works</a>
             <a href="#features" className="hover:text-white transition-all duration-300 hover:scale-110">Features</a>
             <a href="/terms" className="hover:text-white transition-all duration-300 hover:scale-110">Terms</a>
+=======
+            <a href="/" className="hover:text-white transition">Home</a>
+            <a href="#features" className="hover:text-white transition">Features</a>
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
           </div>
 
           {/* Auth buttons */}
           <div className="flex items-center gap-3">
             <a
               href="/login"
+<<<<<<< HEAD
               className="px-5 py-2.5 rounded-lg border border-gray-500/50 text-gray-300 hover:bg-gray-500/20 hover:border-gray-400 transition-all duration-300 hover:scale-105"
+=======
+              className="px-4 py-2 rounded-lg border border-gray-600 text-gray-300 hover:bg-gray-800 transition"
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
             >
               Login
             </a>
             <a
               href="/signup"
+<<<<<<< HEAD
               className="px-6 py-2.5 rounded-lg bg-gradient-to-r from-gray-700 to-gray-900 text-white font-semibold hover:from-gray-600 hover:to-gray-800 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-gray-500/50"
+=======
+              className="px-5 py-2 rounded-lg bg-white text-black font-semibold hover:bg-gray-200 transition"
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
             >
               Get Started
             </a>
@@ -54,6 +80,7 @@ export default function HomePage() {
       </header>
 
       {/* HERO */}
+<<<<<<< HEAD
       <section className={`max-w-6xl mx-auto px-6 py-28 text-center relative transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
 
         {/* Glowing orb behind title */}
@@ -161,12 +188,43 @@ export default function HomePage() {
               )}
             </div>
           ))}
+=======
+      <section className="max-w-6xl mx-auto px-6 py-28 text-center">
+        <h1 className="text-5xl md:text-6xl font-extrabold mb-6 tracking-tight">
+          NextgenFolio AI
+        </h1>
+
+        <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-12">
+          Convert your resume into a{" "}
+          <span className="text-white font-semibold">
+            premium developer portfolio
+          </span>{" "}
+          using AI. Upload your CV, choose a theme, and export a ready-to-use
+          website.
+        </p>
+
+        <div className="flex justify-center gap-4 flex-wrap">
+          <a
+            href="/signup"
+            className="px-8 py-4 rounded-xl bg-white text-black font-semibold hover:bg-gray-200 transition"
+          >
+            Get Started Free
+          </a>
+
+          <a
+            href="/login"
+            className="px-8 py-4 rounded-xl border border-gray-500 text-white hover:bg-gray-800 transition"
+          >
+            Login
+          </a>
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
         </div>
       </section>
 
       {/* FEATURES */}
       <section
         id="features"
+<<<<<<< HEAD
         className="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-3 gap-8 relative z-10"
       >
         {[
@@ -190,10 +248,27 @@ export default function HomePage() {
             gradient: "from-gray-700/20 to-gray-900/20",
             border: "border-gray-500/30",
             icon: "⬇️"
+=======
+        className="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-3 gap-8"
+      >
+        {[
+          {
+            title: "Upload Resume",
+            desc: "Upload your PDF resume and let AI understand your profile.",
+          },
+          {
+            title: "Choose Theme",
+            desc: "Light, Dark, Valentine, Halloween & more themes.",
+          },
+          {
+            title: "Download HTML",
+            desc: "Export a complete portfolio website instantly.",
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
           },
         ].map((item, i) => (
           <div
             key={i}
+<<<<<<< HEAD
             className={`group bg-gradient-to-br ${item.gradient} border ${item.border} rounded-3xl p-8 text-center backdrop-blur-xl hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-gray-500/30 cursor-pointer animate-fade-in-up`}
             style={{ animationDelay: `${i * 150}ms` }}
           >
@@ -204,10 +279,19 @@ export default function HomePage() {
               {item.title}
             </h3>
             <p className="text-gray-300 leading-relaxed">{item.desc}</p>
+=======
+            className="bg-gray-900/80 border border-gray-700 rounded-2xl p-8 text-center backdrop-blur"
+          >
+            <h3 className="text-xl font-semibold mb-3 text-white">
+              {item.title}
+            </h3>
+            <p className="text-gray-400">{item.desc}</p>
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
           </div>
         ))}
       </section>
 
+<<<<<<< HEAD
       {/* TESTIMONIAL / STATS SECTION */}
       <section className="max-w-6xl mx-auto px-6 py-20 text-center">
         <h2 className="text-4xl md:text-5xl font-bold mb-16 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
@@ -311,6 +395,12 @@ export default function HomePage() {
           opacity: 0;
         }
       `}</style>
+=======
+      {/* FOOTER */}
+      <footer className="border-t border-gray-800 py-6 text-center text-gray-500">
+        © {new Date().getFullYear()} NextgenFolio AI
+      </footer>
+>>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
     </main>
   )
 }
