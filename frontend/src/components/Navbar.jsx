@@ -1,27 +1,16 @@
 "use client";
 
-<<<<<<< HEAD
 import React, { useState, useEffect, useRef } from "react";
-=======
-import React, { useState, useEffect } from "react";
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import "./Navbar.css";
 
-<<<<<<< HEAD
 const HIDDEN_ROUTES = ["/login", "/signup"];
-=======
-const HIDDEN_ROUTES = ["/login", "/signup"]; // 👈 image removed
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
 
 const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
-<<<<<<< HEAD
   const dropdownRef = useRef(null);
-=======
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
 
   // Hide navbar only on login & signup
   if (HIDDEN_ROUTES.includes(pathname)) return null;
@@ -29,15 +18,11 @@ const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userId, setUserId] = useState(null);
   const [userName, setUserName] = useState("");
-<<<<<<< HEAD
   const [userEmail, setUserEmail] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
-=======
-  const [showDropdown, setShowDropdown] = useState(false);
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -50,10 +35,7 @@ const Navbar = () => {
           setIsLoggedIn(true);
           setUserId(userData.id);
           setUserName(userData.name);
-<<<<<<< HEAD
           setUserEmail(userData.email);
-=======
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
         } catch (err) {
           console.log("Invalid user data");
         }
@@ -61,7 +43,6 @@ const Navbar = () => {
     }
   }, []);
 
-<<<<<<< HEAD
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -74,8 +55,6 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-=======
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
   const handleLogout = () => {
     localStorage.clear();
     setIsLoggedIn(false);
@@ -91,7 +70,6 @@ const Navbar = () => {
   };
 
   return (
-<<<<<<< HEAD
     <>
       <nav className="ngf-navbar">
         <div className="ngf-container">
@@ -577,55 +555,6 @@ const FeedbackModal = ({ onClose }) => {
         </form>
       </div>
     </div>
-=======
-    <nav className="ngf-navbar">
-      <div className="ngf-container">
-        <Link href="/" className="ngf-logo">
-          🚀 NextgenFolio AI
-        </Link>
-
-        <div className="ngf-links">
-          <Link href="/" className="ngf-link">
-            Home
-          </Link>
-
-          {isLoggedIn ? (
-            <div className="ngf-user">
-              <button
-                className="ngf-user-btn"
-                onClick={() => setShowDropdown(!showDropdown)}
-              >
-                <span className="ngf-avatar">
-                  {userName?.charAt(0)?.toUpperCase()}
-                </span>
-                <span>{userName}</span>
-              </button>
-
-              {showDropdown && (
-                <div className="ngf-dropdown">
-                  <button onClick={handleProfileClick}>
-                    📊 Profile Dashboard
-                  </button>
-                  <button onClick={handleLogout} className="logout">
-                    🚪 Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="ngf-auth">
-              <Link href="/login" className="btn-outline">
-                Login
-              </Link>
-              <Link href="/signup" className="btn-primary">
-                Sign Up
-              </Link>
-            </div>
-          )}
-        </div>
-      </div>
-    </nav>
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
   );
 };
 

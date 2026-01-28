@@ -1,8 +1,5 @@
 export const htmlThemes = {
-<<<<<<< HEAD
   // Classic Themes
-=======
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
   light: `
 :root {
   --bg-color: #ffffff;
@@ -17,11 +14,8 @@ export const htmlThemes = {
   --primary-color: #38bdf8;
 }
   `,
-<<<<<<< HEAD
 
   // Romantic & Soft Themes
-=======
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
   valentine: `
 :root {
   --bg-color: #fff1f2;
@@ -29,7 +23,6 @@ export const htmlThemes = {
   --primary-color: #ec4899;
 }
   `,
-<<<<<<< HEAD
   rose: `
 :root {
   --bg-color: #ffe4e6;
@@ -115,8 +108,6 @@ export const htmlThemes = {
   `,
 
   // Seasonal Themes
-=======
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
   halloween: `
 :root {
   --bg-color: #1f1d2b;
@@ -124,7 +115,6 @@ export const htmlThemes = {
   --primary-color: #f97316;
 }
   `,
-<<<<<<< HEAD
   christmas: `
 :root {
   --bg-color: #fef2f2;
@@ -222,13 +212,6 @@ export const htmlThemes = {
   --bg-color: #eff6ff;
   --text-color: #1e3a8a;
   --primary-color: #2563eb;
-=======
-  sunset: `
-:root {
-  --bg-color: #fff7ed;
-  --text-color: #431407;
-  --primary-color: #fb923c;
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
 }
   `,
 }

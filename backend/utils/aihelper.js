@@ -1,545 +1,317 @@
 const { GoogleGenAI } = require("@google/genai");
-<<<<<<< HEAD
 const dotenv = require("dotenv");
 dotenv.config();
 
+// Initialize the new SDK
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
 
-async function generatePortfolio(resumeText, existingHtml = null, mode = "new", template = "modern") {
-   const modePrompt = mode === "update"
-      ? "Improve and refine the existing portfolio design while keeping the same content structure."
-      : `Transform this resume into a STUNNING, PROFESSIONAL personal portfolio website.`
-
-   const existingContext = existingHtml
-      ? `\n\nExisting Portfolio HTML (refine this):\n${existingHtml}`
-      : ""
-
-   const prompt = `
-You are an EXPERT web designer. Create a BEAUTIFUL, PROFESSIONAL portfolio website.
-
-${modePrompt}
-
-🎨 CRITICAL DESIGN REQUIREMENTS:
-
-1. COMPLETE HTML STRUCTURE:
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        :root {
-            --bg-color: #ffffff;
-            --text-color: #2c3e50;
-            --primary-color: #ff6b35;
-            --secondary-color: #f8f9fa;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-        }
-        
-        /* Navigation */
-        nav {
-            position: sticky;
-            top: 0;
-            background: white;
-            padding: 20px 0;
-            box-shadow: var(--shadow);
-            z-index: 1000;
-        }
-        
-        nav .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        nav .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-        
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 30px;
-        }
-        
-        nav a {
-            text-decoration: none;
-            color: var(--text-color);
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-        
-        nav a:hover {
-            color: var(--primary-color);
-        }
-        
-        .btn-chat {
-            background: var(--primary-color);
-            color: white;
-            padding: 10px 25px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: transform 0.3s;
-        }
-        
-        .btn-chat:hover {
-            transform: translateY(-2px);
-        }
-        
-        /* Hero Section */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-        }
-        
-        .hero .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            align-items: center;
-        }
-        
-        .hero-content h3 {
-            color: var(--primary-color);
-            font-size: 14px;
-            font-weight: 600;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-        }
-        
-        .hero-content h1 {
-            font-size: 56px;
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 20px;
-        }
-        
-        .hero-content h1 .highlight {
-            color: var(--primary-color);
-        }
-        
-        .hero-content p {
-            font-size: 18px;
-            color: #666;
-            margin-bottom: 30px;
-            line-height: 1.8;
-        }
-        
-        .hero-buttons {
-            display: flex;
-            gap: 20px;
-        }
-        
-        .btn-primary {
-            background: var(--primary-color);
-            color: white;
-            padding: 15px 35px;
-            border-radius: 6px;
-            border: 2px solid var(--primary-color);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
-        }
-        
-        .btn-secondary {
-            background: transparent;
-            color: var(--text-color);
-            padding: 15px 35px;
-            border-radius: 6px;
-            border: 2px solid var(--text-color);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-secondary:hover {
-            background: var(--text-color);
-            color: white;
-        }
-        
-        .hero-image {
-            position: relative;
-        }
-        
-        .hero-image img {
-            width: 100%;
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-        }
-        
-        .image-placeholder {
-            width: 100%;
-            height: 500px;
-            background: linear-gradient(135deg, var(--primary-color) 0%, #ff8c5a 100%);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 80px;
-        }
-        
-        /* Sections */
-        section {
-            padding: 80px 20px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .section-title {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-        
-        .section-title h2 {
-            font-size: 42px;
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
-        
-        .section-title p {
-            font-size: 18px;
-            color: #666;
-        }
-        
-        /* Skills Grid */
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-        }
-        
-        .skill-card {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s;
-        }
-        
-        .skill-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .skill-card h3 {
-            font-size: 20px;
-            margin-bottom: 10px;
-            color: var(--primary-color);
-        }
-        
-        /* Projects Grid */
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-        
-        .project-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s;
-        }
-        
-        .project-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .project-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-        
-        .project-info {
-            padding: 25px;
-        }
-        
-        .project-info h3 {
-            font-size: 22px;
-            margin-bottom: 10px;
-        }
-        
-        /* Footer */
-        footer {
-            background: #2c3e50;
-            color: white;
-            text-align: center;
-            padding: 40px 20px;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero .container {
-                grid-template-columns: 1fr;
+async function generateWithRetry(modelName, prompt, retries = 3) {
+    try {
+        const response = await ai.models.generateContent({
+            model: modelName,
+            contents: [
+                {
+                    role: "user",
+                    parts: [{ text: prompt }]
+                }
+            ],
+            config: {
+                temperature: 0.7,
             }
-            
-            .hero-content h1 {
-                font-size: 36px;
-            }
-            
-            nav ul {
-                display: none;
+        });
+
+        // ---------------------------------------------------------
+        // ✅ CRITICAL FIX FOR @google/genai SDK
+        // The response is an OBJECT, not a class. It has no .text() method.
+        // We must access the text property directly.
+        // ---------------------------------------------------------
+
+        // 1. Check if top-level text exists (sometimes used in simplified responses)
+        if (typeof response.text === 'string') {
+            return response.text;
+        }
+
+        // 2. Standard access path for the new SDK
+        if (response.candidates && response.candidates.length > 0) {
+            const firstCandidate = response.candidates[0];
+            if (firstCandidate.content && firstCandidate.content.parts && firstCandidate.content.parts.length > 0) {
+                return firstCandidate.content.parts[0].text;
             }
         }
-    </style>
-</head>
-<body>
-    <!-- Navigation -->
-    <nav>
-        <div class="container">
-            <div class="logo">PORTFOLIO</div>
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#skills">Skills</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-            <button class="btn-chat">Let's Chat</button>
-        </div>
-    </nav>
-    
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="container">
-            <div class="hero-content">
-                <h3>WELCOME TO MY WORLD</h3>
-                <h1>Hi, I'm <span class="highlight">[Name]</span></h1>
-                <h1>[Job Title]</h1>
-                <p>[Professional description from resume]</p>
-                <div class="hero-buttons">
-                    <button class="btn-primary">Hire Me Now</button>
-                    <button class="btn-secondary">View My Work</button>
-                </div>
-            </div>
-            <div class="hero-image">
-                <div class="image-placeholder">👨‍💻</div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Add more sections based on resume data -->
-    
-</body>
-</html>
 
-2. USE THIS EXACT STRUCTURE AND STYLING
-3. Replace [Name], [Job Title], etc. with actual data from resume
-4. Add sections ONLY if data exists in resume
-5. Keep the professional, clean design
-6. Use the color variables (--bg-color, --text-color, --primary-color)
-=======
+        return ""; // Return empty string if generation failed gracefully
 
-const ai = new GoogleGenAI({ apiKey: "AIzaSyCtuuAoRHAg9xMgMeR1mlzGqcCZajNSWGg" });
+    } catch (error) {
+        // Handle Quota (429) or Overload (503)
+        const status = error.status || (error.response ? error.response.status : null);
+
+        if ((status === 429 || status === 503) && retries > 0) {
+            console.log(`⚠️ API Busy/Quota hit. Retrying in 4 seconds... (${retries} attempts left)`);
+            await new Promise(res => setTimeout(res, 4000));
+            return generateWithRetry(modelName, prompt, retries - 1);
+        }
+
+        console.error("❌ AI Generation Error:", error);
+        throw error;
+    }
+}
 
 async function generatePortfolio(resumeText, existingHtml = null, mode = "new", template = "modern") {
-  const templatePrompts = {
-    modern: "Use a modern, clean design with gradient backgrounds, smooth animations, and glassmorphism effects.",
-    minimal: "Create a minimal, elegant design focusing on typography and whitespace.",
-    creative: "Design a bold, creative portfolio with unique layouts and vibrant styling.",
-    professional: "Build a professional corporate portfolio emphasizing credentials and expertise.",
-    dark: "Create a sleek dark-themed portfolio perfect for tech professionals.",
-    startup: "Design a modern tech startup aesthetic with energetic visuals.",
-  }
+    const templatePrompts = {
+        modern: "Create a STUNNING modern portfolio with deep navy/dark blue gradients (#0a192f to #1e3a5f), vibrant cyan/blue accents (#00d9ff, #1e90ff), glassmorphism cards with backdrop-blur, smooth scroll animations, floating glowing elements, professional hero section with large portrait area, premium spacing, and elegant hover effects with glow transitions.",
+        minimal: "Design an ELEGANT minimal portfolio with sophisticated dark backgrounds, premium typography (Inter/Outfit from Google Fonts), generous whitespace, subtle cyan accent highlights, micro-animations, refined monochromatic palette with pops of color, and clean professional layouts.",
+        creative: "Build a BOLD creative portfolio with dark navy backgrounds, vibrant neon gradients (cyan, purple, pink), asymmetric layouts, dynamic entrance animations, creative geometric shapes, eye-catching glowing elements, and artistic sections with WOW-factor visuals.",
+        professional: "Create a PREMIUM corporate portfolio with dark sophisticated theme (navy #0f172a), polished card layouts, cyan/blue professional accents, refined animations, executive presence, credibility-focused sections, elegant typography, and a stunning hero section with professional photo placement.",
+        dark: "Design an ULTRA-SLEEK dark-themed portfolio with deep dark navy backgrounds (#0a192f, #0f1729), electric cyan neon accents (#00d9ff with glow), professional portrait hero section, glassmorphism effects, smooth gradients, cyberpunk aesthetics with glowing lines/borders, modern tech styling, hover glow effects, and premium developer vibes.",
+        startup: "Build a HIGH-ENERGY tech startup portfolio with dark backgrounds, bold cyan/blue gradient overlays, dynamic scroll animations, modern glassmorphic cards with shadows, innovative asymmetric layouts, energetic neon accents, cutting-edge visual trends, and professional hero with portrait.",
+    };
 
-  const modePrompt = mode === "update" 
-    ? "Improve and refine the existing portfolio design while keeping the same content structure."
-    : `Convert the following resume into a PREMIUM, visually impressive personal portfolio website. ${templatePrompts[template] || templatePrompts.modern}`
+    const modePrompt = mode === "update"
+        ? "Dramatically improve and elevate the existing portfolio design with premium visual elements while keeping the same content structure."
+        : `Convert the following resume into an ABSOLUTELY STUNNING, PREMIUM, VISUALLY IMPRESSIVE personal portfolio website that will WOW anyone who sees it. ${templatePrompts[template] || templatePrompts.modern}`;
 
-  const existingContext = existingHtml
-    ? `\n\nExisting Portfolio HTML (refine this):\n${existingHtml}`
-    : ""
+    const existingContext = existingHtml
+        ? `\n\nExisting Portfolio HTML (elevate this to premium quality):\n${existingHtml}`
+        : "";
 
-  const prompt = `
+    const prompt = `
 ${modePrompt}
 
-⚠️ CRITICAL COLOR RULE:
-- DO NOT use any hardcoded colors (no hex, rgb, named colors, etc)
-- Do NOT use inline styles for colors
-- Do NOT use color attributes
-- ONLY use CSS variables: var(--bg-color), var(--text-color), var(--primary-color)
+🎨 CRITICAL DESIGN PHILOSOPHY:
+This portfolio MUST be ULTRA-DYNAMIC, HIGHLY ANIMATED, and VISUALLY STUNNING - like a premium interactive experience.
+DO NOT create a static, simple, or boring design. EVERY element should move, glow, transform, or react to user interaction.
+Think: award-winning portfolio websites with WOW-factor animations and cutting-edge visual effects.
 
-DESIGN REQUIREMENTS:
-- Hero section with name, title, tagline, CTA buttons
-- Modern layout with cards and spacing
-- Sections only if data exists
-- No fake data
-- Responsive
-- Output COMPLETE HTML document
-- Use <style> tag only
-- No inline styles
-- Use semantic HTML
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
+⚠️ CRITICAL COLOR & THEMING RULES:
+- DO NOT use hardcoded colors (no hex, rgb, named colors) for PRIMARY background, text, or accent elements
+- ONLY use these CSS variables for themeable elements:
+    var(--bg-color) - Main background
+    var(--text-color) - Primary text
+    var(--primary-color) - Accent/brand color
+- You CAN and SHOULD use vibrant hardcoded colors for:
+    • Animated gradient overlays with keyframe color shifts
+    • Particle effects and floating elements (cyan #00d9ff, blue #1e90ff, purple #a855f7)
+    • Glowing box-shadows and neon effects
+    • Decorative animated backgrounds
+    • Gradient text and animated borders
+- All major UI elements MUST respect the theme variables
+
+🌟 MANDATORY PREMIUM DESIGN ELEMENTS:
+
+1. **ULTRA-DYNAMIC HERO SECTION** (Must be breathtakingly animated):
+   - Dark navy/deep blue animated gradient background with shifting colors (use @keyframes)
+   - Multiple floating/orbiting particles using CSS animations (20-30 small glowing dots)
+   - Large professional portrait/photo with 3D tilt effect on mouse hover (transform: perspective)
+   - ANIMATED TYPING EFFECT for name or tagline (use @keyframes to simulate typing)
+   - Glowing geometric shapes that rotate and pulse (use rotate, scale animations)
+   - Parallax scrolling effect (background moves slower than foreground)
+   - Animated gradient text that shifts colors continuously
+   - Navigation with smooth scroll, active state animations, and underline slide effects
+   - Buttons with ripple effect, glow pulse animation, and 3D lift on hover
+   - Floating decorative elements (circles, triangles, lines) that move in different directions
+   - Background with ANIMATED mesh gradient or aurora effect
+   - Social icons that bounce, rotate, or flip on hover
+   - Cursor follow effect (elements slightly follow mouse movement)
+   - Staggered fade-in animation for all hero elements (200ms delay between each)
+
+2. **ADVANCED TYPOGRAPHY WITH ANIMATIONS**:
+   - Import Google Fonts (Inter, Poppins, Outfit, Space Grotesk)
+   - Animated gradient text for main headings (gradient position shifts with keyframes)
+   - Text-shadow animations that pulse or glow on hover
+   - Split-text animation effects (letters/words appear one by one)
+   - Glitch effect or neon flicker on accent text
+   - Proper hierarchy with smooth scale animations on scroll into view
+
+3. **ULTRA-INTERACTIVE CARD DESIGNS**:
+   - Glassmorphism with animated backdrop-blur (blur amount changes on hover)
+   - 3D card flip effects on hover (rotateY transforms)
+   - Cards that tilt based on mouse position (3D perspective transform)
+   - Animated gradient borders that rotate around cards
+   - Hover glow that expands with smooth box-shadow transitions
+   - Particle burst effect when hovering over cards
+   - Cards that float up and down with continuous animation
+   - Magnetic effect (cards slightly move toward cursor)
+   - Shimmer/shine effect passing across card on hover
+   - Staggered entrance animations (each card appears 150ms after previous)
+
+4. **EXTENSIVE ADVANCED ANIMATIONS** (CRITICAL - Make it HIGHLY dynamic):
+   - Scroll-triggered animations (elements fade/slide in when scrolling into view)
+   - Parallax effects on multiple layers (foreground, midground, background)
+   - Continuous floating/bobbing animations on decorative elements
+   - Rotating and pulsing glow effects around important elements
+   - Wave/ripple animations on section backgrounds
+   - Morphing blob shapes in the background using @keyframes
+   - Smooth scroll behavior with snap points
+   - Progress bar/scroll indicator that fills as you scroll
+   - Skill bars that animate to percentage when visible
+   - Counter animations (numbers count up from 0)
+   - Text reveal animations (slide, fade, clip-path)
+   - Infinite animations (floating, pulsing, rotating) on decorative elements
+   - Stagger delays for lists and grids (sequential appearance)
+   - Page load animations (entire page animates in)
+
+5. **DYNAMIC MODERN LAYOUT**:
+   - Bento grid layouts with varying card sizes
+   - Masonry layouts for project galleries
+   - Sticky navigation that changes style on scroll
+   - Sections with animated decorative shapes (triangles, circles) in corners
+   - Animated dividers between sections (gradient lines that expand)
+   - Asymmetric hero with animated geometric patterns
+
+6. **ANIMATED COLORS & GRADIENTS** (Create mesmerizing visual effects):
+   - ANIMATED background gradients that shift between colors using @keyframes
+   - Gradient mesh backgrounds with 3-4 color stops that move
+   - Vibrant cyan/blue/purple accents: #00d9ff, #1e90ff, #a855f7, #ec4899
+   - Animated glowing effects: pulsing box-shadows with @keyframes
+   - Iridescent/holographic gradient effects on key elements
+   - Aurora/northern lights style animated backgrounds
+   - Color-shifting text (gradient animation on headings)
+   - Neon glow that intensifies and fades in a loop
+   - Radial gradients with animated position
+   - Multi-layered gradients with different animation speeds
+
+7. **ADVANCED INTERACTIVE ELEMENTS**:
+   - Buttons with magnetic hover effect (button expands toward cursor)
+   - Ripple click effect that emanates from click point
+   - Liquid/blob cursor that follows mouse (custom cursor design)
+   - Loading animations with skeleton screens
+   - Hover state with particle burst effect
+   - 3D button press effect (transform: translateZ)
+   - Button text that glitches or shifts on hover
+   - Icon animations (spin, bounce, wiggle) on hover
+   - Pulse/heartbeat animation on primary CTAs
+   - Trail effect following cursor movement
+
+8. **SECTIONS WITH SPECIAL EFFECTS** (only if data exists):
+   - 🎯 Hero: Particle background, typing effect, 3D transforms, floating elements
+   - 💼 About: Animated text reveal, morphing background shapes, timeline with animations
+   - 💪 Skills: Animated progress bars, skill cards that flip, icon animations, percentage counters
+   - 🚀 Projects: 3D card hover, image zoom/pan on hover, category filter animations, masonry grid
+   - 💼 Experience: Vertical timeline with scroll animations, expanding cards, animated connectors
+   - 🎓 Education: Certificate cards with hover effects, animated badges
+   - 🏆 Achievements: Trophy/medal animations, confetti effect, glowing badges
+   - 📧 Contact: Animated form inputs, social icons with bounce effects, map with marker pulse
+   - EACH section must have scroll-triggered entrance animations
+
+9. **RESPONSIVE WITH ANIMATIONS**:
+   - Mobile-first with touch-optimized animations
+   - Reduce animation complexity on mobile for performance
+   - Hamburger menu with smooth slide-in animation
+   - Touch gestures for mobile interactions
+   - Responsive particles (fewer on mobile)
+
+10. **TECHNICAL EXCELLENCE WITH EFFECTS**:
+    - Extensive @keyframes animations (at least 10-15 different animations)
+    - CSS custom properties for animation timings and colors
+    - Intersection Observer pattern for scroll animations (simulate with CSS if needed)
+    - Transform and translate3d for GPU-accelerated animations
+    - Will-change property for performance
+    - Smooth 60fps animations
+    - No external libraries - pure CSS animations and transforms
+    - Accessibility: prefers-reduced-motion media query to disable animations if requested
 
 Resume Content:
 ${resumeText}${existingContext}
 
-<<<<<<< HEAD
-IMPORTANT:
-- Return COMPLETE HTML with ALL the CSS shown above
-- Make it look EXACTLY like the example
-- Professional, clean, modern design
-- Use actual resume data
-- NO placeholder text if no data exists
+🎯 FINAL CRITICAL REQUIREMENTS:
+- Return ONLY the complete HTML code (no markdown, no explanations)
+- The portfolio MUST be ULTRA-DYNAMIC with EXTENSIVE ANIMATIONS throughout
+- Include at least 15+ different @keyframes animations (floating, pulsing, rotating, gradient-shift, etc.)
+- EVERY interactive element must have hover effects and transitions
+- Add particle effects, floating elements, and animated backgrounds
+- Create scroll-triggered animations for ALL sections (fade-in, slide-in, scale)
+- Dark navy backgrounds (#0a192f, #0f1729) with ANIMATED gradients
+- Neon cyan/blue/purple accents (#00d9ff, #1e90ff, #a855f7) with glow animations
+- 3D transforms and perspective effects on cards and images
+- Typing effect or text reveal animations on hero text
+- Continuous subtle animations (floating, pulsing) that run infinitely
+- Skill bars that animate to their percentage values
+- Buttons with magnetic hover, ripple effects, and 3D transforms
+- Professional portrait area with tilt/3D effect on hover
+- The page should feel ALIVE and DYNAMIC - not static!
+- WOW factor is CRITICAL - every element should move, glow, or respond
+- Think: Award-winning interactive portfolio with cutting-edge animations
+- NO static, simple, or boring designs - make it IMPRESSIVE!
 
-Return ONLY the HTML code.
+Return the complete HTML with EXTENSIVE animations now.
 `;
 
-   const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: prompt,
-   });
-
-   let htmlContent = "";
-
-   if (response.candidates?.length) {
-      const parts = response.candidates[0].content?.parts || [];
-      htmlContent = parts
-         .filter((p) => p.text)
-         .map((p) => p.text)
-         .join("");
-   }
-
-   return htmlContent || response.text || "";
+    // Use Gemini 2.5 Flash (Current Stable)
+    return await generateWithRetry("gemini-2.5-flash", prompt);
 }
 
 async function applyPortfolioTemplate(htmlContent, template) {
-   const prompt = `
-Transform this portfolio HTML to be more professional and attractive.
+    const templatePrompts = {
+        modern: "Transform this portfolio to a STUNNING modern design with deep navy/dark blue backgrounds (#0a192f, #1e3a5f), vibrant cyan accents (#00d9ff, #1e90ff), glassmorphism cards with backdrop-filter and glow effects, smooth scroll animations, floating glowing elements, professional hero section with large portrait placement, premium spacing, and elegant hover effects with neon glows.",
+        minimal: "Redesign this portfolio to be ELEGANTLY minimal with sophisticated dark navy backgrounds, premium Google Fonts (Inter/Outfit), generous whitespace, subtle cyan accent highlights, micro-animations, refined dark monochromatic palette with pops of cyan, sophisticated layouts, and perfect typography hierarchy.",
+        creative: "Make this portfolio BOLD and WOW-FACTOR creative with dark navy backgrounds, vibrant multi-color neon gradients (cyan #00d9ff, purple, pink), unique asymmetric layouts, dynamic entrance animations, creative geometric shapes with glow effects, eye-catching visual elements, professional hero with portrait, and artistic flair.",
+        professional: "Redesign this portfolio with PREMIUM corporate dark aesthetic: dark navy theme (#0f172a), polished card layouts with glassmorphism, cyan/blue professional accents (#1e90ff), sophisticated hover animations with glows, professional hero section with large portrait area, elegant typography, credibility-focused sections, and executive presence.",
+        dark: "Transform this portfolio to use an ULTRA-SLEEK dark theme with deep navy backgrounds (#0a192f, #0f1729), electric cyan neon accents (#00d9ff) with intense glow effects, professional portrait hero section with glowing geometric overlays, glassmorphism effects, cyberpunk aesthetics with glowing borders, tech-forward styling, hover glow animations, and premium developer vibes.",
+        startup: "Redesign this portfolio with HIGH-ENERGY tech startup aesthetics: dark backgrounds with bold cyan/blue gradient overlays, dynamic scroll animations, modern glassmorphic card designs with neon shadows, innovative asymmetric layouts, energetic color combinations with cyan accents, professional hero with portrait, and cutting-edge visual trends.",
+    };
 
-Current HTML:
-${htmlContent}
+    const prompt = `
+You are an ELITE web designer creating PREMIUM portfolio designs.
 
-REQUIREMENTS:
-1. Keep all content and information
-2. Improve the styling to be more professional
-3. Add proper CSS with modern design
-4. Use clean, professional layout
-5. Add smooth transitions and hover effects
-6. Make it responsive
-7. Use CSS variables for colors (--bg-color, --text-color, --primary-color)
-
-Return ONLY the complete modified HTML code.
-`;
-
-   const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: prompt,
-   });
-
-   let htmlContent_result = "";
-
-   if (response.candidates?.length) {
-      const parts = response.candidates[0].content?.parts || [];
-      htmlContent_result = parts
-         .filter((p) => p.text)
-         .map((p) => p.text)
-         .join("");
-   }
-
-   return htmlContent_result || response.text || "";
-=======
-Return ONLY the complete HTML code.
-`;
-
-    const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: prompt,
-    });
-
-    let htmlContent = "";
-
-  if (response.candidates?.length) {
-    const parts = response.candidates[0].content?.parts || [];
-    htmlContent = parts
-      .filter((p) => p.text)
-      .map((p) => p.text)
-      .join("");
-  }
-
-  return htmlContent || response.text || "";
-}
-
-async function applyPortfolioTemplate(htmlContent, template) {
-  const templatePrompts = {
-    modern: "Transform this portfolio to a modern design with gradient backgrounds, smooth animations, and glassmorphism effects.",
-    minimal: "Redesign this portfolio to be minimal and elegant, focusing on typography and whitespace.",
-    creative: "Make this portfolio bold and creative with unique layouts and vibrant styling.",
-    professional: "Redesign this portfolio to have a professional corporate aesthetic.",
-    dark: "Transform this portfolio to use a sleek dark theme.",
-    startup: "Redesign this portfolio with a modern tech startup aesthetic.",
-  }
-
-  const prompt = `
-You are an expert web designer. Transform the following portfolio HTML to match the "${template}" style.
+Transform the following portfolio HTML to match the "${template}" style with MAXIMUM visual impact.
 
 ${templatePrompts[template]}
 
 Current Portfolio HTML:
 ${htmlContent}
 
-CRITICAL RULES:
-- Keep all existing content (name, email, skills, projects, etc.)
-- DO NOT use any hardcoded colors (no hex, rgb, named colors)
-- ONLY use CSS variables: var(--bg-color), var(--text-color), var(--primary-color)
-- Maintain responsiveness
-- Return ONLY the complete modified HTML code
+🎨 TRANSFORMATION REQUIREMENTS:
+
+⚠️ CRITICAL COLOR & THEMING RULES:
+- Keep all content (name, email, skills, projects, etc.) EXACTLY as-is
+- DO NOT use hardcoded colors for PRIMARY background, text, or accents
+- MUST use CSS variables for themeable elements:
+    var(--bg-color) - Main background
+    var(--text-color) - Primary text  
+    var(--primary-color) - Accent/brand color
+- You CAN use subtle hardcoded colors for:
+    • Gradient overlays (rgba values)
+    • Decorative elements
+    • Shadows and glows
+    • Borders
+
+🌟 MANDATORY PREMIUM ELEMENTS FOR "${template}" TEMPLATE:
+
+1. **ULTRA-DYNAMIC HERO**: Dark navy animated gradient background, 20-30 floating particles, large portrait with 3D tilt on hover, ANIMATED TYPING EFFECT on name/tagline, rotating glowing geometric shapes, parallax scroll, premium buttons (filled + outlined cyan) with ripple and 3D hover, navigation with slide animations, social icons with bounce/rotate effects, background aurora/mesh gradient animation, staggered fade-in for all elements
+
+2. **ADVANCED ANIMATED TYPOGRAPHY**: Import Google Fonts (Inter/Outfit/Poppins/Space Grotesk), animated gradient text that shifts colors continuously, pulsing text-shadow on hover, split-text letter animations, glitch/flicker effects on accents, scale animations on scroll, white/light text on dark with glow effects
+
+3. **ULTRA-INTERACTIVE GLASSMORPHISM CARDS**: Dark semi-transparent with animated backdrop-blur, 3D flip on hover (rotateY), tilt based on mouse position (perspective transform), rotating animated gradient borders, expanding glow shadows, particle burst on hover, floating up/down continuously, magnetic effect (move toward cursor), shimmer shine passing across, staggered entrance with 150ms delays
+
+4. **EXTENSIVE ANIMATIONS** (CRITICAL): Scroll-triggered fade/slide-in for ALL sections, parallax on multiple layers, continuous floating/bobbing on decorative elements, rotating/pulsing glows, wave/ripple on backgrounds, morphing blob shapes with @keyframes, smooth scroll with snap points, animated progress/scroll indicator, skill bars animating to %, number counters, text reveals with clip-path, infinite animations everywhere, stagger delays, page load animations
+
+5. **DYNAMIC DARK LAYOUTS**: Deep navy (#0a192f, #0f1729, #1e3a5f) with ANIMATED gradients, bento/masonry grids, sticky nav that changes on scroll, animated decorative shapes in corners, expanding gradient dividers, asymmetric hero with geometric patterns, generous spacing, responsive containers
+
+6. **ANIMATED GRADIENTS & GLOWS**: Background gradients shifting colors with @keyframes, mesh gradients with moving color stops, cyan/blue/purple/pink accents (#00d9ff, #1e90ff, #a855f7, #ec4899), pulsing glowing box-shadows (0 0 20px rgba(0, 217, 255, 0.3)), iridescent/holographic effects, aurora backgrounds, color-shifting text, neon glow loops, animated radial gradients, multi-layer gradients at different speeds
+
+7. **ADVANCED INTERACTIVE BUTTONS**: Magnetic hover (expand toward cursor), ripple click effect, liquid blob cursor follower, particle burst on hover, 3D press effect (translateZ), text glitch on hover, icon spin/bounce/wiggle, pulse heartbeat on CTAs, cursor trail effects, smooth 0.3s transitions with cubic-bezier easing
+
+8. **SECTIONS WITH SPECIAL FX**: Hero (particles, typing, 3D, floating), About (text reveal, morphing shapes, animated timeline), Skills (animated progress bars, flip cards, counters), Projects (3D hover, image zoom, filter animations, masonry), Experience (timeline with scroll animations, expanding cards, connectors), Education (hover effects, badges), Achievements (confetti, glowing badges), Contact (animated inputs, bouncing icons), scroll-triggered entrance for EACH section
+
+9. **RESPONSIVE ANIMATIONS**: Touch-optimized, reduced complexity on mobile, hamburger with slide-in, touch gestures, fewer particles on mobile, portrait scales down, all animations fluid across breakpoints
+
+10. **TECHNICAL ANIMATION EXCELLENCE**: 15+ @keyframes animations (float, pulse, rotate, gradient-shift, wave, morph, etc.), CSS custom properties, Intersection Observer simulation, translate3d for GPU acceleration, will-change for performance, 60fps smooth, prefers-reduced-motion support, no external libraries, pure CSS magic
+
+🎯 DESIGN QUALITY STANDARDS:
+- This MUST be ULTRA-DYNAMIC with animations on EVERY element
+- Every visitor should be AMAZED by the level of interactivity and motion
+- Think: Award-winning interactive portfolios, Awwwards.com level quality
+- Reference: Cutting-edge developer portfolios with particle effects and 3D transforms  
+- The page should feel ALIVE - continuous subtle movements everywhere
+- CRITICAL: Include 15+ @keyframes animations minimum
+- NO static, flat, or boring sections - everything must move, glow, or respond
+- Make it so impressive that it stands out from 99% of portfolios
+
+Return ONLY the complete transformed HTML code (no markdown, no explanations).
+Make it ULTRA-DYNAMIC and BREATHTAKING!
 `;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
-    contents: prompt,
-  });
-
-  let htmlContent_result = "";
-
-  if (response.candidates?.length) {
-    const parts = response.candidates[0].content?.parts || [];
-    htmlContent_result = parts
-      .filter((p) => p.text)
-      .map((p) => p.text)
-      .join("");
-  }
-
-  return htmlContent_result || response.text || "";
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
+    return await generateWithRetry("gemini-2.5-flash", prompt);
 }
 
 module.exports = { generatePortfolio, applyPortfolioTemplate };
