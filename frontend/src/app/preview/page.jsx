@@ -1,9 +1,10 @@
 "use client"
 
+import { Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import PortfolioPreview from "@/components/PortfolioPreview"
 
-export default function PreviewPage() {
+function PreviewContent() {
   const searchParams = useSearchParams()
   const html = decodeURIComponent(searchParams.get("html") || "")
   const theme = searchParams.get("theme") || "light"
@@ -14,3 +15,12 @@ export default function PreviewPage() {
     </div>
   )
 }
+
+export default function PreviewPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading preview...</div>}>
+      <PreviewContent />
+    </Suspense>
+  )
+}
+
