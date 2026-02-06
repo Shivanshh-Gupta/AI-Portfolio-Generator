@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import PortfolioPreview from "@/components/PortfolioPreview"
 import { htmlThemes } from "@/config/htmlThemes"
@@ -8,7 +8,9 @@ import { portfolioTemplates } from "@/config/portfolioTemplates"
 
 export default function ImagePage() {
   return (
-    <ImageUploadComponent />
+    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-950 flex items-center justify-center text-white text-xl">Loading...</div>}>
+      <ImageUploadComponent />
+    </Suspense>
   )
 }
 
