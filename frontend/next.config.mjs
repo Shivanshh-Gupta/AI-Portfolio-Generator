@@ -1,13 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    webpack: (config, { isServer }) => {
-        // Exclude src/pages directory from build (contains React Router components)
-        config.module.rules.push({
-            test: /\.(jsx|js)$/,
-            exclude: /src\/pages/,
-        });
-
-        return config;
+    // This tells Next.js to ignore React Router pages in src/pages
+    experimental: {
+        externalDir: true,
     },
 };
 
