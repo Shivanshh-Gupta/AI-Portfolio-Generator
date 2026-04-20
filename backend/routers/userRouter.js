@@ -25,7 +25,7 @@ const authMiddleware = (req, res, next) => {
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'dummy_secret',
-  callbackURL: `${process.env.BACKEND_URL}/api/auth/google/callback`
+  callbackURL: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google/callback`
 },
   async (accessToken, refreshToken, profile, done) => {
     try {
