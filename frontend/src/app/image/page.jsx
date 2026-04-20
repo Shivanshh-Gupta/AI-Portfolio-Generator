@@ -1,31 +1,314 @@
 "use client"
 
-<<<<<<< HEAD
 import { useState, useEffect, useRef } from "react"
 import { useSearchParams } from "next/navigation"
-=======
-import { useState, useEffect } from "react"
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
 import PortfolioPreview from "@/components/PortfolioPreview"
 import { htmlThemes } from "@/config/htmlThemes"
 import { portfolioTemplates } from "@/config/portfolioTemplates"
+import Link from "next/link"
 
 export default function ImagePage() {
-  return (
-    <ImageUploadComponent />
-  )
+  return <ImageUploadComponent />
 }
 
+/* ─── ICONS ─────────────────────────────────────────── */
+const Icon = {
+  upload: <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path strokeLinecap="round" strokeLinejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>,
+  template: <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path strokeLinecap="round" strokeLinejoin="round" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>,
+  theme: <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path strokeLinecap="round" strokeLinejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>,
+  dl: <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>,
+  save: <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>,
+  share: <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>,
+  folder: <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>,
+  spark: <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>,
+  refresh: <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>,
+  chevron: (open) => <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" style={{transform: open?'rotate(180deg)':'none',transition:'transform 0.2s'}}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>,
+  check: <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#00d9ff" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>,
+  close: <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>,
+  eye: <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>,
+  trash: <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>,
+  logout: <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>,
+  copy: <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>,
+  lock: <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>,
+}
+
+/* ─── CSS ─────────────────────────────────────────────── */
+const CSS = `
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:#050b18;color:#e2e8f0;overflow-x:hidden;}
+
+:root{
+  --cyan:#00d9ff; --cyan-dim:rgba(0,217,255,0.08); --cyan-glow:rgba(0,217,255,0.25);
+  --bg:#050b18; --bg2:#0a1628; --bg3:rgba(10,22,40,0.8);
+  --border:rgba(255,255,255,0.07); --border-cyan:rgba(0,217,255,0.18);
+  --text:#e2e8f0; --muted:#64748b; --muted2:#94a3b8;
+}
+
+/* NAV */
+.app-nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  height:60px;padding:0 2rem;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(5,11,24,0.9);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+.app-nav-logo{font-size:1.1rem;font-weight:800;color:var(--text);text-decoration:none;}
+.app-nav-logo span{color:var(--cyan);}
+.nav-user{display:flex;align-items:center;gap:0.5rem;position:relative;}
+.user-btn{
+  display:flex;align-items:center;gap:0.6rem;
+  padding:5px 12px 5px 5px;border-radius:100px;
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  cursor:pointer;transition:all 0.2s;
+}
+.user-btn:hover{border-color:rgba(255,255,255,0.14);background:rgba(255,255,255,0.07);}
+.avatar{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,var(--cyan),#7c3aed);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.75rem;font-weight:700;color:#050b18;flex-shrink:0;
+}
+.user-name{font-size:0.82rem;font-weight:600;color:var(--text);}
+.user-dropdown{
+  position:absolute;top:calc(100% + 8px);right:0;
+  width:230px;background:#0d1f3c;border:1px solid var(--border-cyan);
+  border-radius:12px;overflow:hidden;
+  box-shadow:0 16px 48px rgba(0,0,0,0.5);
+  animation:dropIn 0.15s ease both;
+}
+@keyframes dropIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+.dropdown-header{padding:12px 14px;border-bottom:1px solid var(--border);}
+.dropdown-header .d-name{font-size:0.85rem;font-weight:700;color:var(--text);}
+.dropdown-header .d-email{font-size:0.75rem;color:var(--muted);margin-top:2px;word-break:break-all;}
+.dropdown-item{
+  width:100%;padding:10px 14px;border:none;
+  background:transparent;cursor:pointer;
+  display:flex;align-items:center;gap:0.6rem;
+  font-size:0.82rem;font-weight:500;
+  transition:all 0.15s;text-align:left;
+}
+.dropdown-item:hover{background:rgba(255,255,255,0.04);}
+.dropdown-item.danger{color:#f87171;}
+.dropdown-item.danger:hover{background:rgba(239,68,68,0.08);}
+
+/* PAGE LAYOUT */
+.app-wrap{
+  min-height:100vh;
+  padding-top:60px;
+  display:grid;
+  grid-template-columns:300px 1fr;
+  grid-template-rows:auto;
+}
+@media(max-width:900px){.app-wrap{grid-template-columns:1fr;}}
+
+/* SIDEBAR */
+.sidebar{
+  height:calc(100vh - 60px);
+  position:sticky;top:60px;
+  overflow-y:auto;
+  border-right:1px solid var(--border);
+  padding:1.5rem 1rem;
+  display:flex;flex-direction:column;gap:0.75rem;
+  background:rgba(5,11,24,0.6);
+}
+.sidebar::-webkit-scrollbar{width:4px;}
+.sidebar::-webkit-scrollbar-track{background:transparent;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border-cyan);border-radius:2px;}
+
+/* PANEL CARDS */
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color 0.2s;}
+.panel:hover{border-color:var(--border-cyan);}
+.panel-head{padding:0.9rem 1rem;display:flex;align-items:center;gap:0.5rem;border-bottom:1px solid var(--border);}
+.panel-label{font-size:0.75rem;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.5px;}
+.panel-icon{color:var(--cyan);display:flex;}
+.panel-body{padding:0.9rem;}
+
+/* UPLOAD ZONE */
+.upload-zone{
+  border:1.5px dashed var(--border-cyan);border-radius:10px;padding:1.5rem 1rem;
+  text-align:center;cursor:pointer;transition:all 0.2s;
+  background:var(--cyan-dim);position:relative;overflow:hidden;
+}
+.upload-zone:hover{border-color:var(--cyan);background:rgba(0,217,255,0.12);}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.upload-icon{width:36px;height:36px;border-radius:8px;background:rgba(0,217,255,0.12);border:1px solid var(--border-cyan);display:flex;align-items:center;justify-content:center;margin:0 auto 0.6rem;color:var(--cyan);}
+.upload-title{font-size:0.85rem;font-weight:600;color:var(--text);margin-bottom:0.25rem;}
+.upload-sub{font-size:0.72rem;color:var(--muted);}
+.file-badge{
+  margin-top:0.75rem;padding:6px 10px;border-radius:6px;
+  background:rgba(0,217,255,0.08);border:1px solid var(--border-cyan);
+  display:flex;align-items:center;gap:0.4rem;
+  font-size:0.75rem;color:var(--cyan);font-weight:600;text-align:left;
+}
+.file-badge svg{flex-shrink:0;}
+
+/* SIDEBAR BUTTONS */
+.sidebar-btn{
+  width:100%;padding:10px 14px;border-radius:10px;border:none;
+  font-size:0.83rem;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:0.5rem;
+  transition:all 0.2s;
+}
+.sidebar-btn.primary{background:var(--cyan);color:#050b18;box-shadow:0 0 18px var(--cyan-glow);}
+.sidebar-btn.primary:hover{background:#33e1ff;transform:translateY(-1px);box-shadow:0 0 28px rgba(0,217,255,0.4);}
+.sidebar-btn.primary:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+.sidebar-btn.outline{background:transparent;border:1px solid var(--border-cyan);color:var(--cyan);}
+.sidebar-btn.outline:hover{background:var(--cyan-dim);}
+.sidebar-btn.ghost{background:rgba(255,255,255,0.03);border:1px solid var(--border);color:var(--muted2);}
+.sidebar-btn.ghost:hover{border-color:var(--border-cyan);color:var(--text);}
+
+/* SELECT */
+.styled-select{
+  width:100%;padding:9px 12px;border-radius:8px;
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  color:var(--text);font-size:0.82rem;font-family:'Inter',sans-serif;
+  outline:none;cursor:pointer;transition:border-color 0.2s;
+  -webkit-appearance:none;
+}
+.styled-select:focus{border-color:var(--border-cyan);}
+.styled-select option,.styled-select optgroup{background:#0a1628;color:#e2e8f0;}
+
+/* TEMPLATE LIST */
+.template-list{display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto;margin-top:0.5rem;}
+.template-list::-webkit-scrollbar{width:3px;}
+.template-list::-webkit-scrollbar-thumb{background:var(--border-cyan);border-radius:2px;}
+.tpl-item{
+  width:100%;padding:8px 10px;border-radius:7px;border:none;
+  cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:0.5rem;
+  background:rgba(255,255,255,0.02);transition:all 0.15s;text-align:left;
+}
+.tpl-item:hover,.tpl-item.active{background:var(--cyan-dim);border:1px solid var(--border-cyan);}
+.tpl-item .tpl-name{font-size:0.8rem;font-weight:600;color:var(--text);}
+.tpl-item .tpl-desc{font-size:0.7rem;color:var(--muted);margin-top:1px;}
+
+/* MODE TOGGLE */
+.mode-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.mode-btn{
+  padding:8px 6px;border-radius:8px;border:1px solid var(--border);
+  background:transparent;color:var(--muted2);font-size:0.75rem;font-weight:600;
+  cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:0.3rem;
+}
+.mode-btn.active{border-color:var(--cyan);background:var(--cyan-dim);color:var(--cyan);}
+.mode-btn:hover:not(.active){border-color:var(--border-cyan);color:var(--text);}
+
+/* MAIN AREA */
+.main-area{padding:1.5rem;display:flex;flex-direction:column;gap:1rem;}
+
+/* EMPTY STATE */
+.empty-state{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:4rem 2rem;
+  border:1.5px dashed var(--border);border-radius:16px;
+  background:rgba(255,255,255,0.015);
+}
+.empty-icon{width:56px;height:56px;border-radius:14px;background:var(--cyan-dim);border:1px solid var(--border-cyan);display:flex;align-items:center;justify-content:center;color:var(--cyan);margin:0 auto 1.25rem;}
+.empty-title{font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:0.4rem;}
+.empty-sub{font-size:0.85rem;color:var(--muted);line-height:1.6;max-width:320px;}
+.empty-steps{display:flex;gap:1.5rem;margin-top:2rem;flex-wrap:wrap;justify-content:center;}
+.empty-step{display:flex;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--muted2);}
+.step-num{width:20px;height:20px;border-radius:50%;background:var(--cyan-dim);border:1px solid var(--border-cyan);color:var(--cyan);font-size:0.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* PREVIEW AREA */
+.preview-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.preview-topbar{
+  padding:0.75rem 1rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(255,255,255,0.02);
+}
+.browser-dots{display:flex;gap:5px;align-items:center;}
+.browser-dot{width:10px;height:10px;border-radius:50%;}
+.preview-label{font-size:0.75rem;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:0.4rem;}
+.preview-label span{color:var(--cyan);}
+.preview-actions{display:flex;gap:0.4rem;}
+.preview-action{
+  padding:5px 10px;border-radius:6px;border:1px solid var(--border);
+  background:transparent;color:var(--muted2);font-size:0.72rem;font-weight:600;
+  cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:0.3rem;
+}
+.preview-action:hover{border-color:var(--border-cyan);color:var(--cyan);}
+.preview-action.cyan{background:var(--cyan);color:#050b18;border-color:var(--cyan);}
+.preview-action.cyan:hover{background:#33e1ff;}
+
+/* SPINNER */
+.spinner{width:15px;height:15px;border-radius:50%;border:2px solid rgba(5,11,24,0.3);border-top-color:#050b18;animation:spin 0.6s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.spinner-white{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.15);border-top-color:var(--muted2);animation:spin 0.6s linear infinite;}
+
+/* MODALS */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);z-index:999;display:flex;align-items:center;justify-content:center;padding:1rem;animation:fadeIn 0.15s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.modal{background:#0d1f3c;border:1px solid var(--border-cyan);border-radius:16px;width:100%;max-width:480px;box-shadow:0 24px 64px rgba(0,0,0,0.6);animation:scaleIn 0.15s ease both;}
+@keyframes scaleIn{from{opacity:0;transform:scale(0.96);}to{opacity:1;transform:scale(1);}}
+.modal-head{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-size:1rem;font-weight:700;color:var(--text);}
+.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;border-radius:4px;display:flex;transition:color 0.15s;}
+.modal-close:hover{color:var(--text);}
+.modal-body{padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:0.9rem;}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:0.6rem;}
+.modal-label{font-size:0.78rem;font-weight:600;color:var(--muted2);margin-bottom:0.35rem;}
+.modal-input{
+  width:100%;padding:9px 12px;border-radius:8px;
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  color:var(--text);font-size:0.85rem;font-family:'Inter',sans-serif;
+  outline:none;transition:border-color 0.2s;
+}
+.modal-input:focus{border-color:var(--border-cyan);}
+.modal-input::placeholder{color:var(--muted);}
+.modal-btn{
+  flex:1;padding:9px;border-radius:8px;border:none;
+  font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;
+}
+.modal-btn.primary{background:var(--cyan);color:#050b18;box-shadow:0 0 16px var(--cyan-glow);}
+.modal-btn.primary:hover{background:#33e1ff;}
+.modal-btn.ghost{background:rgba(255,255,255,0.04);color:var(--muted2);border:1px solid var(--border);}
+.modal-btn.ghost:hover{border-color:var(--border-cyan);color:var(--text);}
+
+/* PORTFOLIOS MODAL */
+.portfolios-modal{max-width:720px;max-height:80vh;display:flex;flex-direction:column;}
+.portfolios-list{overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:0.6rem;padding:1rem 1.5rem;}
+.portfolios-list::-webkit-scrollbar{width:4px;}
+.portfolios-list::-webkit-scrollbar-thumb{background:var(--border-cyan);border-radius:2px;}
+.p-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:1rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;transition:border-color 0.2s;}
+.p-card:hover,.p-card.active{border-color:var(--border-cyan);}
+.p-card-info{flex:1;min-width:0;}
+.p-card-title{font-size:0.875rem;font-weight:700;color:var(--text);margin-bottom:0.2rem;}
+.p-card-desc{font-size:0.75rem;color:var(--muted);margin-bottom:0.5rem;}
+.p-card-meta{display:flex;gap:0.75rem;flex-wrap:wrap;}
+.p-tag{font-size:0.68rem;color:var(--muted2);background:rgba(255,255,255,0.04);padding:2px 7px;border-radius:4px;}
+.p-actions{display:flex;gap:0.4rem;flex-shrink:0;}
+.p-btn{
+  padding:5px 10px;border-radius:6px;border:1px solid var(--border);
+  background:transparent;color:var(--muted2);font-size:0.72rem;font-weight:600;
+  cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:0.3rem;
+}
+.p-btn:hover{border-color:var(--border-cyan);color:var(--cyan);}
+.p-btn.danger:hover{border-color:rgba(239,68,68,0.4);color:#f87171;}
+
+/* SHARE INPUT */
+.share-input-row{display:flex;gap:0.5rem;}
+.share-url{flex:1;padding:9px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;color:var(--muted2);font-size:0.78rem;font-family:'Inter',sans-serif;outline:none;}
+
+/* LOADING OVERLAY */
+.loading-over{position:absolute;inset:0;background:rgba(5,11,24,0.85);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.75rem;border-radius:inherit;}
+.loading-spinner{width:36px;height:36px;border-radius:50%;border:3px solid rgba(0,217,255,0.15);border-top-color:var(--cyan);animation:spin 0.8s linear infinite;}
+.loading-text{font-size:0.85rem;font-weight:600;color:var(--muted2);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+`
+
+/* ─── MAIN COMPONENT ─────────────────────────────────── */
 function ImageUploadComponent() {
-<<<<<<< HEAD
   const searchParams = useSearchParams()
   const dropdownRef = useRef(null)
-=======
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
+
   const [selectedImage, setSelectedImage] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isApplyingTemplate, setIsApplyingTemplate] = useState(false)
+  const [loadingMsg, setLoadingMsg] = useState("Generating...")
   const [portfolioHtml, setPortfolioHtml] = useState(null)
-  const [theme, setTheme] = useState("light")
+  const [theme, setTheme] = useState("dark")
   const [generationMode, setGenerationMode] = useState("new")
   const [selectedTemplate, setSelectedTemplate] = useState("modern")
   const [showTemplates, setShowTemplates] = useState(false)
@@ -35,73 +318,50 @@ function ImageUploadComponent() {
   const [savedPortfolios, setSavedPortfolios] = useState([])
   const [showPortfoliosList, setShowPortfoliosList] = useState(false)
   const [currentPortfolioId, setCurrentPortfolioId] = useState(null)
-<<<<<<< HEAD
   const [showShareModal, setShowShareModal] = useState(false)
   const [shareUrl, setShareUrl] = useState("")
-  const [currentSharePortfolio, setCurrentSharePortfolio] = useState(null)
-  const [isVisible, setIsVisible] = useState(false)
+  const [copied, setCopied] = useState(false)
 
-  // Profile section states
   const [userName, setUserName] = useState("")
   const [userEmail, setUserEmail] = useState("")
   const [showProfileDropdown, setShowProfileDropdown] = useState(false)
-  const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [showAccountModal, setShowAccountModal] = useState(false)
 
-  // Handle Google OAuth callback
   useEffect(() => {
-    const token = searchParams.get('token')
-    const user = searchParams.get('user')
-
+    const token = searchParams.get("token")
+    const user = searchParams.get("user")
     if (token && user) {
-      localStorage.setItem('token', token)
-      localStorage.setItem('user', user)
-      // Clean URL
-      window.history.replaceState({}, '', '/image')
+      localStorage.setItem("token", token)
+      localStorage.setItem("user", user)
+      window.history.replaceState({}, "", "/image")
     }
-
-    // Load user info
-    const storedUser = localStorage.getItem('user')
+    const storedUser = localStorage.getItem("user")
     if (storedUser) {
       try {
-        const userData = JSON.parse(storedUser)
-        setUserName(userData.name || "")
-        setUserEmail(userData.email || "")
-      } catch (err) {
-        console.log("Invalid user data")
-      }
+        const u = JSON.parse(storedUser)
+        setUserName(u.name || "")
+        setUserEmail(u.email || "")
+      } catch (_) {}
     }
-
-
   }, [searchParams])
 
-  // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    const close = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target))
         setShowProfileDropdown(false)
-      }
     }
-
-    if (showProfileDropdown) {
-      // Use 'click' instead of 'mousedown' to allow menu item onClick handlers to execute first
-      document.addEventListener('click', handleClickOutside)
-    }
-
-    return () => {
-      document.removeEventListener('click', handleClickOutside)
-    }
+    if (showProfileDropdown) document.addEventListener("click", close)
+    return () => document.removeEventListener("click", close)
   }, [showProfileDropdown])
-=======
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
+
+  useEffect(() => { fetchPortfolios() }, [])
 
   const handleUpload = async () => {
-    if (!selectedImage) return alert("Select PDF first")
-
+    if (!selectedImage) return alert("Select a PDF first")
     setIsLoading(true)
+    setLoadingMsg(generationMode === "update" ? "Updating portfolio..." : "Generating portfolio...")
     const formData = new FormData()
     formData.append("avatar", selectedImage)
-
     try {
       const res = await fetch("http://localhost:5000/file/profile", {
         method: "POST",
@@ -113,1604 +373,464 @@ function ImageUploadComponent() {
           ...(generationMode === "update" && portfolioHtml && { "X-Existing-HTML": portfolioHtml }),
         },
       })
-<<<<<<< HEAD
-
       const data = await res.json()
-
-      if (!res.ok || !data.html) {
-        throw new Error(data.error || "Failed to generate portfolio")
-      }
-
+      if (!res.ok || !data.html) throw new Error(data.error || "Failed to generate portfolio")
       setPortfolioHtml(data.html)
       setGenerationMode("new")
       setShowTemplates(false)
     } catch (err) {
-      console.error(err)
       alert(err.message || "Generation failed")
-=======
-      const data = await res.json()
-      setPortfolioHtml(data.html)
-      setGenerationMode("new")
-      setShowTemplates(false)
-    } catch {
-      alert("Generation failed")
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
     } finally {
       setIsLoading(false)
+      setLoadingMsg("Generating...")
     }
   }
 
   const applyTemplate = async (templateName) => {
     if (!portfolioHtml) return
-
-    setIsLoading(true)
+    setIsApplyingTemplate(true)
+    setLoadingMsg("Applying template... (AI is redesigning your portfolio)")
     setShowTemplates(false)
-
     try {
       const res = await fetch("http://localhost:5000/file/apply-template", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({
-          html: portfolioHtml,
-          template: templateName,
-        }),
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem("token")}` },
+        body: JSON.stringify({ html: portfolioHtml, template: templateName }),
       })
-
-      if (!res.ok) throw new Error("Template application failed")
-
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}))
+        throw new Error(errData.error || `Server error ${res.status}`)
+      }
       const data = await res.json()
+      if (!data.html) throw new Error("No HTML returned from server")
       setPortfolioHtml(data.html)
       setSelectedTemplate(templateName)
-    } catch (error) {
-      alert("Failed to apply template: " + error.message)
+    } catch (err) {
+      alert("Failed to apply template: " + err.message)
     } finally {
-      setIsLoading(false)
+      setIsApplyingTemplate(false)
+      setLoadingMsg("Generating...")
     }
   }
 
   const downloadHTML = () => {
     if (!portfolioHtml) return
-
-    const themeCSS = htmlThemes[theme] || htmlThemes.light
-
+    const themeCSS = htmlThemes[theme] || htmlThemes.dark
     let finalHTML = portfolioHtml
-
-<<<<<<< HEAD
-    // DON'T remove existing styles - keep the professional styling!
-    // Just add theme CSS variables at the beginning
-
-    const themeStyle = `<style>
-/* Theme: ${theme} */
-${themeCSS}
-</style>`
-
-    // Inject theme at the very beginning of head or document
-    if (finalHTML.includes("<head>")) {
-      finalHTML = finalHTML.replace("<head>", `<head>\n${themeStyle}`)
-    } else if (finalHTML.includes("<!DOCTYPE html>")) {
-      finalHTML = finalHTML.replace("<!DOCTYPE html>", `<!DOCTYPE html>\n${themeStyle}`)
-=======
-    finalHTML = finalHTML.replace(/<style>[\s\S]*?<\/style>/g, "")
-
-    const themeStyle = `<style>
-:root {
-  ${themeCSS}
-}
-
-/* Override all colors with theme variables */
-html, body {
-  background: var(--bg-color) !important;
-  color: var(--text-color) !important;
-}
-
-* {
-  color: var(--text-color) !important;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  color: var(--primary-color) !important;
-}
-
-a {
-  color: var(--primary-color) !important;
-}
-
-button, .btn, [role="button"] {
-  background-color: var(--primary-color) !important;
-  color: var(--bg-color) !important;
-  border-color: var(--primary-color) !important;
-}
-
-/* Card & section backgrounds */
-.card, section, article, [class*="container"] {
-  background: var(--bg-color) !important;
-  color: var(--text-color) !important;
-  border-color: var(--primary-color) !important;
-}
-</style>`
-
-    if (finalHTML.includes("</head>")) {
-      finalHTML = finalHTML.replace("</head>", `${themeStyle}</head>`)
-    } else if (finalHTML.includes("<body>")) {
-      finalHTML = finalHTML.replace("<body>", `<head>${themeStyle}</head><body>`)
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-    } else {
-      finalHTML = themeStyle + finalHTML
-    }
-
-    const blob = new Blob([finalHTML], { type: "text/html" })
-    const url = URL.createObjectURL(blob)
-
-    const a = document.createElement("a")
-    a.href = url
-<<<<<<< HEAD
-    a.download = `portfolio-${theme}-${Date.now()}.html`
-=======
-    a.download = `portfolio-${theme}.html`
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
+    const themeStyle = `<style id="theme-override">\n/* Applied Theme: ${theme} */\n${themeCSS}\n</style>`
+    if (finalHTML.includes("</head>")) finalHTML = finalHTML.replace("</head>", `${themeStyle}\n</head>`)
+    else if (finalHTML.includes("</Head>")) finalHTML = finalHTML.replace("</Head>", `${themeStyle}\n</Head>`)
+    else if (finalHTML.includes("<body")) finalHTML = finalHTML.replace(/<body/i, `<head>${themeStyle}</head>\n<body`)
+    else finalHTML = themeStyle + finalHTML
+    const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(new Blob([finalHTML], { type: "text/html" })), download: `portfolio-${theme}-${Date.now()}.html` })
     a.click()
-
-    URL.revokeObjectURL(url)
+    URL.revokeObjectURL(a.href)
   }
 
   const savePortfolio = async () => {
-    if (!portfolioHtml || !saveTitle.trim()) {
-      alert("Please enter a title for your portfolio")
-      return
-    }
-
+    if (!portfolioHtml || !saveTitle.trim()) return alert("Please enter a title")
     try {
       const res = await fetch("http://localhost:5000/api/portfolio/save", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({
-          title: saveTitle,
-          description: saveDescription,
-          content: portfolioHtml,
-          theme: theme,
-          template: selectedTemplate
-        }),
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem("token")}` },
+        body: JSON.stringify({ title: saveTitle, description: saveDescription, content: portfolioHtml, theme, template: selectedTemplate }),
       })
-
       const data = await res.json()
-
       if (res.ok) {
-        alert("Portfolio saved successfully!")
-        setShowSaveModal(false)
-        setSaveTitle("")
-        setSaveDescription("")
-        setCurrentPortfolioId(data.portfolio._id)
-        fetchPortfolios()
-      } else {
-        alert(data.message || "Failed to save portfolio")
-      }
-    } catch (error) {
-      alert("Failed to save portfolio")
-      console.error(error)
-    }
+        setShowSaveModal(false); setSaveTitle(""); setSaveDescription("")
+        setCurrentPortfolioId(data.portfolio._id); fetchPortfolios()
+      } else { alert(data.message || "Failed to save") }
+    } catch (_) { alert("Failed to save portfolio") }
   }
 
   const fetchPortfolios = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/portfolio/user", {
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        setSavedPortfolios(data)
-      }
-    } catch (error) {
-      console.error("Failed to fetch portfolios:", error)
-    }
+      const res = await fetch("http://localhost:5000/api/portfolio/user", { headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` } })
+      if (res.ok) setSavedPortfolios(await res.json())
+    } catch (_) {}
   }
 
-  const loadPortfolio = (portfolio) => {
-    setPortfolioHtml(portfolio.content)
-    setTheme(portfolio.theme || "light")
-    setSelectedTemplate(portfolio.template || "modern")
-    setCurrentPortfolioId(portfolio._id)
+  const loadPortfolio = (p) => {
+    setPortfolioHtml(p.content); setTheme(p.theme || "dark")
+    setSelectedTemplate(p.template || "modern"); setCurrentPortfolioId(p._id)
     setShowPortfoliosList(false)
   }
 
   const deletePortfolio = async (id) => {
-    if (!confirm("Are you sure you want to delete this portfolio?")) return
-
-    try {
-      const res = await fetch(`http://localhost:5000/api/portfolio/delete/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
-
-      if (res.ok) {
-        alert("Portfolio deleted successfully")
-        fetchPortfolios()
-        if (currentPortfolioId === id) {
-          setCurrentPortfolioId(null)
-        }
-      } else {
-        alert("Failed to delete portfolio")
-      }
-    } catch (error) {
-      alert("Failed to delete portfolio")
-      console.error(error)
-    }
+    if (!confirm("Delete this portfolio?")) return
+    const re = await fetch(`http://localhost:5000/api/portfolio/delete/${id}`, { method: "DELETE", headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` } })
+    if (re.ok) { fetchPortfolios(); if (currentPortfolioId === id) setCurrentPortfolioId(null) }
+    else alert("Failed to delete")
   }
 
-<<<<<<< HEAD
-  const sharePortfolio = async (portfolioId) => {
-    try {
-      const res = await fetch(`http://localhost:5000/api/portfolio/share/${portfolioId}`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
-
-      const data = await res.json()
-
-      if (res.ok) {
-        const fullShareUrl = `${window.location.origin}/shared/${data.shareToken}`
-        setShareUrl(fullShareUrl)
-        setCurrentSharePortfolio(portfolioId)
-        setShowShareModal(true)
-        fetchPortfolios()
-      } else {
-        alert(data.message || "Failed to share portfolio")
-      }
-    } catch (error) {
-      alert("Failed to share portfolio")
-      console.error(error)
-    }
+  const sharePortfolio = async (id) => {
+    const re = await fetch(`http://localhost:5000/api/portfolio/share/${id}`, { method: "POST", headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` } })
+    const data = await re.json()
+    if (re.ok) { setShareUrl(`${window.location.origin}/shared/${data.shareToken}`); setShowShareModal(true); fetchPortfolios() }
+    else alert(data.message || "Failed to share")
   }
 
-  const unsharePortfolio = async (portfolioId) => {
-    if (!confirm("Are you sure you want to make this portfolio private?")) return
-
-    try {
-      const res = await fetch(`http://localhost:5000/api/portfolio/unshare/${portfolioId}`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
-
-      if (res.ok) {
-        alert("Portfolio is now private")
-        fetchPortfolios()
-      } else {
-        alert("Failed to unshare portfolio")
-      }
-    } catch (error) {
-      alert("Failed to unshare portfolio")
-      console.error(error)
-    }
+  const unsharePortfolio = async (id) => {
+    if (!confirm("Make this portfolio private?")) return
+    const re = await fetch(`http://localhost:5000/api/portfolio/unshare/${id}`, { method: "POST", headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` } })
+    if (re.ok) { alert("Portfolio is now private"); fetchPortfolios() }
   }
 
   const copyShareLink = () => {
     navigator.clipboard.writeText(shareUrl)
-    alert("Share link copied to clipboard!")
+    setCopied(true); setTimeout(() => setCopied(false), 2000)
   }
 
-  const shareCurrentPortfolio = () => {
-    if (currentPortfolioId) {
-      sharePortfolio(currentPortfolioId)
-    } else {
-      alert("Please save the portfolio first before sharing")
-    }
-  }
-
-  // Load portfolios on mount and trigger animations
-  useEffect(() => {
-    fetchPortfolios()
-    setIsVisible(true)
-  }, [])
+  const themeGroups = [
+    { label: "Classic", opts: [["dark","🌙 Dark"],["light","🌞 Light"]] },
+    { label: "Professional", opts: [["corporate","💼 Corporate"],["navy","⚓ Navy"],["slate","🏢 Slate"]] },
+    { label: "Tech", opts: [["cyberpunk","⚡ Cyberpunk"],["neon","🔷 Neon"],["matrix","💻 Matrix"]] },
+    { label: "Vibrant", opts: [["sunset","🌅 Sunset"],["ocean","🌊 Ocean"],["forest","🌲 Forest"]] },
+    { label: "Elegant", opts: [["gold","✨ Gold"],["platinum","💎 Platinum"],["emerald","💚 Emerald"]] },
+    { label: "Artistic", opts: [["valentine","💖 Valentine"],["lavender","💜 Lavender"],["coral","🪸 Coral"],["mint","🍃 Mint"]] },
+    { label: "Bold", opts: [["midnight","🌃 Midnight"],["ruby","🔴 Ruby"],["monochrome","⚫ Mono"]] },
+  ]
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-950 px-4 py-16 text-white relative overflow-hidden">
+    <>
+      <style>{CSS}</style>
 
-      {/* Animated Background Blobs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute top-40 right-20 w-[500px] h-[500px] bg-gray-500/15 rounded-full blur-3xl animate-float-delayed"></div>
-        <div className="absolute bottom-20 left-1/3 w-80 h-80 bg-gray-400/20 rounded-full blur-3xl animate-float-slow"></div>
-        <div className="absolute bottom-40 right-1/4 w-72 h-72 bg-white/15 rounded-full blur-3xl animate-float"></div>
-        {/* Additional animated particles */}
-        <div className="absolute top-1/2 left-1/4 w-32 h-32 bg-gray-300/15 rounded-full blur-2xl animate-bounce"></div>
-        <div className="absolute top-1/3 right-1/3 w-40 h-40 bg-white/10 rounded-full blur-2xl animate-pulse-slow"></div>
-      </div>
-
-      {/* Header Section */}
-      <div className={`max-w-6xl mx-auto mb-16 relative z-10 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-        {/* Profile Button - Top Right */}
+      {/* NAV */}
+      <nav className="app-nav">
+        <Link href="/" className="app-nav-logo">NextgenFolio<span> AI</span></Link>
         {userName && (
-          <div className="absolute top-0 right-0 z-20" ref={dropdownRef}>
-            <button
-              onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-              className="flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2.5 rounded-full hover:bg-white/20 transition-all duration-300 group"
-            >
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-gray-400 to-gray-600 flex items-center justify-center font-bold text-white">
-                {userName.charAt(0).toUpperCase()}
-              </div>
-              <span className="text-white font-semibold">{userName}</span>
-              <span className={`text-white/70 text-sm transition-transform duration-300 ${showProfileDropdown ? 'rotate-180' : ''}`}>▼</span>
+          <div className="nav-user" ref={dropdownRef}>
+            <button className="user-btn" onClick={() => setShowProfileDropdown(v => !v)}>
+              <div className="avatar">{userName.charAt(0).toUpperCase()}</div>
+              <span className="user-name">{userName}</span>
+              {Icon.chevron(showProfileDropdown)}
             </button>
-
-            {/* Profile Dropdown */}
             {showProfileDropdown && (
-              <div className="absolute top-full right-0 mt-2 w-72 bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
-                {/* User Info Header */}
-                <div className="bg-gradient-to-r from-gray-800 to-black p-4 text-white">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-white/30 flex items-center justify-center font-bold text-lg">
-                      {userName.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-bold text-lg">{userName}</div>
-                      <div className="text-sm opacity-90 truncate">{userEmail}</div>
-                    </div>
-                  </div>
+              <div className="user-dropdown">
+                <div className="dropdown-header">
+                  <div className="d-name">{userName}</div>
+                  <div className="d-email">{userEmail}</div>
                 </div>
-
-                {/* Menu Items */}
-                <div className="py-2">
-                  {/* Logout */}
-                  <button
-                    onClick={() => {
-                      localStorage.clear()
-                      window.location.href = '/'
-                    }}
-                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors text-red-600 group"
-                  >
-                    <span className="text-xl group-hover:scale-110 transition-transform">🚪</span>
-                    <span className="font-medium">Logout</span>
-                  </button>
-                </div>
+                <button className="dropdown-item danger" onClick={() => { localStorage.clear(); window.location.href = "/" }}>
+                  {Icon.logout} Sign out
+                </button>
               </div>
             )}
           </div>
         )}
+      </nav>
 
-        <div className="text-center">
-          {/* Glowing orb behind title */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-white/10 rounded-full blur-3xl animate-pulse-slow"></div>
+      {/* LAYOUT */}
+      <div className="app-wrap">
 
-          <div className="relative">
-            <h1 className="text-5xl md:text-7xl font-extrabold bg-gradient-to-r from-white via-gray-300 to-gray-400 bg-clip-text text-transparent mb-4 animate-gradient bg-300%">
-              Portfolio Generator
-            </h1>
-            <p className="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto">
-              Transform your resume into a <span className="text-transparent bg-gradient-to-r from-white to-gray-300 bg-clip-text font-bold">stunning portfolio website</span> with AI magic ✨
-            </p>
-          </div>
-        </div>
-      </div>
+        {/* SIDEBAR */}
+        <aside className="sidebar">
 
-      <div className={`max-w-6xl mx-auto grid md:grid-cols-3 gap-8 relative z-10 transition-all duration-1000 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-=======
-  // Load portfolios on mount
-  useEffect(() => {
-    fetchPortfolios()
-  }, [])
-
-  return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 px-4 py-16 text-white">
-
-      {/* Header Section */}
-      <div className="max-w-6xl mx-auto mb-16">
-        <div className="text-center">
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
-            Portfolio Generator
-          </h1>
-          <p className="text-gray-300 text-lg">Transform your resume into a stunning portfolio website</p>
-        </div>
-      </div>
-
-      <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-
-        {/* Left Column - Upload Section */}
-        <div className="md:col-span-1">
-          <div className="sticky top-8 space-y-6">
-            {/* File Upload Card */}
-<<<<<<< HEAD
-            <div className="group bg-gradient-to-br from-gray-800/60 via-gray-700/50 to-gray-900/60 border border-gray-500/30 rounded-2xl p-8 backdrop-blur-xl hover:border-gray-400/60 transition-all duration-500 hover:shadow-2xl hover:shadow-gray-500/30 hover:scale-[1.02] animate-scale-in relative overflow-hidden">
-              {/* Shimmer effect on hover */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                <div className="absolute inset-0 animate-shimmer"></div>
-              </div>
-              <div className="text-center relative z-10">
-                <div className="mb-4 text-5xl group-hover:scale-110 group-hover:animate-bounce transition-transform duration-500">📄</div>
-                <h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Upload Resume</h2>
-                <p className="text-gray-300 text-sm mb-6">PDF format only • Max 10MB</p>
-=======
-            <div className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-2xl p-8 backdrop-blur-sm hover:border-blue-400/60 transition">
-              <div className="text-center">
-                <div className="mb-4 text-4xl">📄</div>
-                <h2 className="text-xl font-bold mb-2">Upload Resume</h2>
-                <p className="text-gray-300 text-sm mb-6">PDF format only</p>
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-
-                <label className="relative block cursor-pointer">
-                  <input
-                    type="file"
-                    accept="application/pdf"
-                    onChange={(e) => setSelectedImage(e.target.files[0])}
-                    className="hidden"
-                  />
-<<<<<<< HEAD
-                  <div className="bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-600 hover:to-gray-800 text-white py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-gray-500/50 relative overflow-hidden group">
-                    <span className="relative z-10">Choose File</span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-gray-900 to-gray-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-=======
-                  <div className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-3 rounded-xl font-semibold transition transform hover:scale-105">
-                    Choose File
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-                  </div>
-                </label>
-
-                {selectedImage && (
-<<<<<<< HEAD
-                  <div className="mt-4 p-3 bg-white/10 border border-white/30 rounded-lg animate-scale-in">
-                    <p className="text-white text-sm font-semibold truncate flex items-center justify-center gap-2">
-                      <span className="animate-heartbeat">✓</span>
-                      <span>{selectedImage.name}</span>
-                    </p>
-                  </div>
-=======
-                  <p className="text-green-400 text-sm mt-3 truncate">✓ {selectedImage.name}</p>
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-                )}
-              </div>
+          {/* UPLOAD */}
+          <div className="panel">
+            <div className="panel-head">
+              <span className="panel-icon">{Icon.upload}</span>
+              <span className="panel-label">Resume</span>
             </div>
-
-            {/* Template Selector */}
-<<<<<<< HEAD
-            <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/60 border border-slate-500/30 rounded-2xl p-6 backdrop-blur-xl hover:border-slate-400/50 transition-all duration-500 hover:shadow-xl hover:shadow-slate-500/20 animate-slide-in-left" style={{ animationDelay: '100ms' }}>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-2xl">🎨</span>
-                <p className="text-sm font-bold text-gray-200">Portfolio Template</p>
+            <div className="panel-body">
+              <div className="upload-zone">
+                <input type="file" accept="application/pdf" onChange={e => setSelectedImage(e.target.files[0])} />
+                <div className="upload-icon">{Icon.upload}</div>
+                <div className="upload-title">Drop your PDF here</div>
+                <div className="upload-sub">PDF only · Max 10MB</div>
               </div>
-              <button
-                onClick={() => setShowTemplates(!showTemplates)}
-                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 text-white font-semibold transition-all duration-300 text-left flex items-center justify-between group hover:shadow-lg"
-              >
-                <span className="group-hover:text-gray-300 transition-colors">{portfolioTemplates[selectedTemplate]?.name || "Modern"}</span>
-                <span className={`text-xl transition-transform duration-300 ${showTemplates ? 'rotate-180' : ''}`}>▼</span>
-              </button>
+              {selectedImage && (
+                <div className="file-badge">
+                  {Icon.check}
+                  <span style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{selectedImage.name}</span>
+                </div>
+              )}
+            </div>
+          </div>
 
-              {showTemplates && (
-                <div className="mt-4 space-y-2 max-h-60 overflow-y-auto custom-scrollbar animate-slide-up">
-=======
-            <div className="bg-gradient-to-br from-slate-800/50 to-slate-700/50 border border-slate-600/30 rounded-2xl p-6 backdrop-blur-sm">
-              <p className="text-sm font-semibold text-gray-300 mb-4">Portfolio Template</p>
-              <button
-                onClick={() => setShowTemplates(!showTemplates)}
-                className="w-full py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold transition text-left flex items-center justify-between"
-              >
-                <span>{portfolioTemplates[selectedTemplate]?.name || "Modern"}</span>
-                <span className="text-xl">{showTemplates ? "▼" : "▶"}</span>
+          {/* TEMPLATE */}
+          <div className="panel">
+            <div className="panel-head">
+              <span className="panel-icon">{Icon.template}</span>
+              <span className="panel-label">Template</span>
+            </div>
+            <div className="panel-body">
+              <button className="sidebar-btn ghost" style={{justifyContent:'space-between',padding:'8px 10px'}} onClick={() => setShowTemplates(v => !v)}>
+                <span style={{color:'var(--text)',fontSize:'0.8rem',fontWeight:600}}>{portfolioTemplates[selectedTemplate]?.name || "Modern"}</span>
+                {Icon.chevron(showTemplates)}
               </button>
-
               {showTemplates && (
-                <div className="mt-4 space-y-2 max-h-60 overflow-y-auto">
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-                  {Object.entries(portfolioTemplates).map(([key, template]) => (
-                    <button
-                      key={key}
-                      onClick={() => {
-                        setSelectedTemplate(key)
-                        if (portfolioHtml) applyTemplate(key)
-                      }}
-                      disabled={isLoading}
-<<<<<<< HEAD
-                      className={`w-full p-4 rounded-lg text-left transition-all duration-300 transform hover:scale-[1.02] ${selectedTemplate === key
-                        ? "bg-gradient-to-r from-gray-600 to-gray-800 text-white shadow-lg shadow-gray-500/30"
-                        : "bg-slate-700/80 hover:bg-slate-600 text-gray-200 hover:shadow-md"
-                        } disabled:opacity-50 disabled:cursor-not-allowed`}
-                    >
-                      <div className="font-bold">{template.name}</div>
-=======
-                      className={`w-full p-4 rounded-lg text-left transition ${selectedTemplate === key
-                        ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg"
-                        : "bg-slate-700 hover:bg-slate-600 text-gray-200"
-                        } disabled:opacity-50`}
-                    >
-                      <div className="font-semibold">{template.name}</div>
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-                      <div className="text-xs text-gray-300 mt-1">{template.description}</div>
+                <div className="template-list" style={{marginTop:'0.5rem'}}>
+                  {Object.entries(portfolioTemplates).map(([k, t]) => (
+                    <button key={k} className={`tpl-item${selectedTemplate === k ? ' active' : ''}`} disabled={isLoading}
+                      onClick={() => { setSelectedTemplate(k); setShowTemplates(false); }}>
+                      <div>
+                        <div className="tpl-name">{t.name}</div>
+                        <div className="tpl-desc">{t.description}</div>
+                      </div>
+                      {selectedTemplate === k && Icon.check}
                     </button>
                   ))}
                 </div>
               )}
+              {portfolioHtml && (
+                <button
+                  className="sidebar-btn outline"
+                  style={{marginTop:'0.6rem',fontSize:'0.78rem'}}
+                  disabled={isLoading || isApplyingTemplate}
+                  onClick={() => applyTemplate(selectedTemplate)}
+                >
+                  {isApplyingTemplate ? <><span className="spinner-white"/>Applying...</> : <>{Icon.refresh} Apply Template</>}
+                </button>
+              )}
             </div>
+          </div>
 
-            {/* Mode Selection */}
-            {portfolioHtml && (
-<<<<<<< HEAD
-              <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/60 border border-slate-500/30 rounded-2xl p-6 backdrop-blur-xl hover:border-slate-400/50 transition-all duration-500 hover:shadow-xl animate-slide-in-right" style={{ animationDelay: '200ms' }}>
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-2xl">⚙️</span>
-                  <p className="text-sm font-bold text-gray-200">Generation Mode</p>
-                </div>
-                <div className="space-y-3">
-                  <button
-                    onClick={() => setGenerationMode("new")}
-                    className={`w-full py-3 px-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 ${generationMode === "new"
-                      ? "bg-gradient-to-r from-gray-600 to-gray-800 text-white shadow-lg shadow-gray-500/50"
-                      : "bg-slate-700/80 text-gray-300 hover:bg-slate-600 hover:shadow-md"
-=======
-              <div className="bg-gradient-to-br from-slate-800/50 to-slate-700/50 border border-slate-600/30 rounded-2xl p-6 backdrop-blur-sm">
-                <p className="text-sm font-semibold text-gray-300 mb-4">Generation Mode</p>
-                <div className="space-y-3">
-                  <button
-                    onClick={() => setGenerationMode("new")}
-                    className={`w-full py-3 rounded-xl font-semibold transition transform hover:scale-105 ${generationMode === "new"
-                      ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/50"
-                      : "bg-slate-700 text-gray-300 hover:bg-slate-600"
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-                      }`}
-                  >
-                    ✨ New Design
+          {/* MODE (only if portfolio exists) */}
+          {portfolioHtml && (
+            <div className="panel">
+              <div className="panel-head">
+                <span className="panel-icon">{Icon.refresh}</span>
+                <span className="panel-label">Mode</span>
+              </div>
+              <div className="panel-body">
+                <div className="mode-row">
+                  <button className={`mode-btn${generationMode === 'new' ? ' active' : ''}`} onClick={() => setGenerationMode("new")}>
+                    {Icon.spark} New
                   </button>
-                  <button
-                    onClick={() => setGenerationMode("update")}
-<<<<<<< HEAD
-                    className={`w-full py-3 px-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 ${generationMode === "update"
-                      ? "bg-gradient-to-r from-gray-700 to-black text-white shadow-lg shadow-gray-500/50"
-                      : "bg-slate-700/80 text-gray-300 hover:bg-slate-600 hover:shadow-md"
-=======
-                    className={`w-full py-3 rounded-xl font-semibold transition transform hover:scale-105 ${generationMode === "update"
-                      ? "bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg shadow-purple-500/50"
-                      : "bg-slate-700 text-gray-300 hover:bg-slate-600"
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-                      }`}
-                  >
-                    🎨 Update Design
+                  <button className={`mode-btn${generationMode === 'update' ? ' active' : ''}`} onClick={() => setGenerationMode("update")}>
+                    {Icon.refresh} Update
                   </button>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Generate Button */}
-            <button
-              onClick={handleUpload}
-              disabled={isLoading || !selectedImage}
-<<<<<<< HEAD
-              className={`w-full py-5 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 animate-scale-in relative overflow-hidden ${isLoading || !selectedImage
-                ? "bg-gray-600 text-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-gray-600 via-gray-700 to-gray-800 text-white hover:from-gray-500 hover:via-gray-600 hover:to-gray-700 shadow-xl shadow-gray-500/50 hover:shadow-2xl hover:shadow-gray-500/60 animate-glow"
-                }`}
-              style={{ animationDelay: '300ms' }}
-            >
-              {isLoading ? (
-                <span className="flex items-center justify-center gap-3">
-                  <span className="animate-rotate text-2xl">⚙️</span>
-                  <span className="animate-pulse">Generating Magic...</span>
-                </span>
-              ) : (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="animate-bounce">{generationMode === "update" ? "🎨" : "✨"}</span>
-                  <span>{generationMode === "update" ? "Update" : "Generate"} Portfolio</span>
-                </span>
-=======
-              className={`w-full py-4 rounded-xl font-bold text-lg transition transform hover:scale-105 ${isLoading || !selectedImage
-                ? "bg-gray-600 text-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 shadow-lg shadow-green-500/50"
-                }`}
-            >
-              {isLoading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="animate-spin">⚙️</span>
-                  Generating...
-                </span>
-              ) : (
-                `${generationMode === "update" ? "🎨 Update" : "✨ Generate"} Portfolio`
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-              )}
-            </button>
+          {/* GENERATE */}
+          <button className="sidebar-btn primary" onClick={handleUpload} disabled={isLoading || isApplyingTemplate || !selectedImage}>
+            {isLoading ? <><span className="spinner"/>{loadingMsg}</> : <>{Icon.spark}{generationMode === 'update' ? 'Update Portfolio' : 'Generate Portfolio'}</>}
+          </button>
 
-            {/* Theme Selector */}
-            {portfolioHtml && (
-<<<<<<< HEAD
-              <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/60 border border-slate-500/30 rounded-2xl p-6 backdrop-blur-xl hover:border-slate-400/50 transition-all duration-500 hover:shadow-xl animate-slide-in-left" style={{ animationDelay: '400ms' }}>
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-2xl">🌈</span>
-                  <p className="text-sm font-bold text-gray-200">Choose Theme</p>
-                </div>
-                <select
-                  value={theme}
-                  onChange={(e) => setTheme(e.target.value)}
-                  className="w-full bg-gradient-to-r from-slate-700 to-slate-600 border border-slate-500 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 transition-all duration-300 font-semibold cursor-pointer hover:from-slate-600 hover:to-slate-500"
-                >
-                  <optgroup label="Classic">
-                    <option value="light">🌞 Light</option>
-                    <option value="dark">🌙 Dark</option>
-                  </optgroup>
-
-                  <optgroup label="Romantic & Soft">
-                    <option value="valentine">💖 Valentine</option>
-                    <option value="rose">🌹 Rose</option>
-                    <option value="lavender">💜 Lavender</option>
-                  </optgroup>
-
-                  <optgroup label="Vibrant & Energetic">
-                    <option value="sunset">🌅 Sunset</option>
-                    <option value="ocean">🌊 Ocean</option>
-                    <option value="forest">🌲 Forest</option>
-                  </optgroup>
-
-                  <optgroup label="Professional & Corporate">
-                    <option value="corporate">💼 Corporate</option>
-                    <option value="navy">⚓ Navy</option>
-                    <option value="slate">🏢 Slate</option>
-                  </optgroup>
-
-                  <optgroup label="Modern & Tech">
-                    <option value="cyberpunk">🤖 Cyberpunk</option>
-                    <option value="neon">⚡ Neon</option>
-                    <option value="matrix">💻 Matrix</option>
-                  </optgroup>
-
-                  <optgroup label="Seasonal">
-                    <option value="halloween">🎃 Halloween</option>
-                    <option value="christmas">🎄 Christmas</option>
-                    <option value="spring">🌸 Spring</option>
-                  </optgroup>
-
-                  <optgroup label="Elegant & Luxury">
-                    <option value="gold">✨ Gold</option>
-                    <option value="platinum">💎 Platinum</option>
-                    <option value="emerald">💚 Emerald</option>
-                  </optgroup>
-
-                  <optgroup label="Creative & Artistic">
-                    <option value="sunset_purple">🌇 Sunset Purple</option>
-                    <option value="mint">🍃 Mint</option>
-                    <option value="coral">🪸 Coral</option>
-                  </optgroup>
-
-                  <optgroup label="Minimalist">
-                    <option value="monochrome">⚫ Monochrome</option>
-                    <option value="cream">☕ Cream</option>
-                  </optgroup>
-
-                  <optgroup label="Bold & Dramatic">
-                    <option value="midnight">🌃 Midnight</option>
-                    <option value="ruby">💎 Ruby</option>
-                    <option value="sapphire">💠 Sapphire</option>
-                  </optgroup>
-=======
-              <div className="bg-gradient-to-br from-slate-800/50 to-slate-700/50 border border-slate-600/30 rounded-2xl p-6 backdrop-blur-sm">
-                <p className="text-sm font-semibold text-gray-300 mb-4">Choose Theme</p>
-                <select
-                  value={theme}
-                  onChange={(e) => setTheme(e.target.value)}
-                  className="w-full bg-slate-700 border border-slate-600 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-blue-400 transition"
-                >
-                  <option value="light">🌞 Light</option>
-                  <option value="dark">🌙 Dark</option>
-                  <option value="valentine">💖 Valentine</option>
-                  <option value="halloween">🎃 Halloween</option>
-                  <option value="sunset">🌅 Sunset</option>
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
+          {/* THEME (only if portfolio exists) */}
+          {portfolioHtml && (
+            <div className="panel">
+              <div className="panel-head">
+                <span className="panel-icon">{Icon.theme}</span>
+                <span className="panel-label">Theme</span>
+              </div>
+              <div className="panel-body">
+                <select className="styled-select" value={theme} onChange={e => setTheme(e.target.value)}>
+                  {themeGroups.map(g => (
+                    <optgroup key={g.label} label={g.label}>
+                      {g.opts.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                    </optgroup>
+                  ))}
                 </select>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Download Button */}
-            {portfolioHtml && (
-              <button
-                onClick={downloadHTML}
-<<<<<<< HEAD
-                className="w-full py-5 rounded-xl bg-gradient-to-r from-gray-700 via-gray-800 to-black hover:from-gray-600 hover:via-gray-700 hover:to-gray-900 text-white font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl shadow-gray-500/50 hover:shadow-2xl hover:shadow-gray-500/60 animate-slide-in-right relative overflow-hidden group"
-                style={{ animationDelay: '500ms' }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-black to-gray-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <span className="flex items-center justify-center gap-2 relative z-10">
-                  <span className="group-hover:animate-bounce">⬇️</span>
-                  <span>Download HTML</span>
-                </span>
-=======
-                className="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-bold text-lg transition transform hover:scale-105 shadow-lg shadow-emerald-500/50"
-              >
-                ⬇️ Download HTML
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-              </button>
-            )}
+          {/* ACTIONS */}
+          {portfolioHtml && (
+            <>
+              <button className="sidebar-btn outline" onClick={downloadHTML}>{Icon.dl} Download HTML</button>
+              <button className="sidebar-btn ghost" onClick={() => setShowSaveModal(true)}>{Icon.save} Save Portfolio</button>
+              {currentPortfolioId && (
+                <button className="sidebar-btn ghost" onClick={() => sharePortfolio(currentPortfolioId)}>{Icon.share} Share Portfolio</button>
+              )}
+            </>
+          )}
 
-            {/* Save Portfolio Button */}
-            {portfolioHtml && (
-              <button
-                onClick={() => setShowSaveModal(true)}
-<<<<<<< HEAD
-                className="w-full py-5 rounded-xl bg-gradient-to-r from-gray-600 via-gray-700 to-gray-900 hover:from-gray-500 hover:via-gray-600 hover:to-gray-800 text-white font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl shadow-gray-500/50 hover:shadow-2xl hover:shadow-gray-500/60 animate-slide-in-left relative overflow-hidden group"
-                style={{ animationDelay: '600ms' }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-gray-900 to-gray-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <span className="flex items-center justify-center gap-2 relative z-10">
-                  <span className="group-hover:animate-heartbeat">💾</span>
-                  <span>Save Portfolio</span>
-                </span>
-              </button>
-            )}
+          <button className="sidebar-btn ghost" onClick={() => { fetchPortfolios(); setShowPortfoliosList(true) }}>
+            {Icon.folder} My Portfolios {savedPortfolios.length > 0 && `(${savedPortfolios.length})`}
+          </button>
 
-            {/* Share Current Portfolio Button */}
-            {portfolioHtml && currentPortfolioId && (
-              <button
-                onClick={shareCurrentPortfolio}
-                className="w-full py-5 rounded-xl bg-gradient-to-r from-gray-500 via-gray-600 to-gray-800 hover:from-gray-400 hover:via-gray-500 hover:to-gray-700 text-white font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl shadow-gray-500/50 hover:shadow-2xl hover:shadow-gray-500/60 animate-slide-in-right relative overflow-hidden group"
-                style={{ animationDelay: '700ms' }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-gray-800 to-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <span className="flex items-center justify-center gap-2 relative z-10">
-                  <span className="group-hover:animate-bounce">🔗</span>
-                  <span>Share Portfolio</span>
-                </span>
-=======
-                className="w-full py-4 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-bold text-lg transition transform hover:scale-105 shadow-lg shadow-blue-500/50"
-              >
-                💾 Save Portfolio
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-              </button>
-            )}
+        </aside>
 
-            {/* My Portfolios Button */}
-            <button
-              onClick={() => setShowPortfoliosList(!showPortfoliosList)}
-<<<<<<< HEAD
-              className="w-full py-5 rounded-xl bg-gradient-to-r from-gray-700 via-gray-800 to-black hover:from-gray-600 hover:via-gray-700 hover:to-gray-900 text-white font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl shadow-gray-500/50 hover:shadow-2xl hover:shadow-gray-500/60 animate-slide-in-left relative overflow-hidden group"
-              style={{ animationDelay: '800ms' }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-black to-gray-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <span className="flex items-center justify-center gap-2 relative z-10">
-                <span className="group-hover:animate-bounce">📂</span>
-                <span>My Portfolios ({savedPortfolios.length})</span>
-              </span>
-=======
-              className="w-full py-4 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold text-lg transition transform hover:scale-105 shadow-lg shadow-purple-500/50"
-            >
-              📂 My Portfolios ({savedPortfolios.length})
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-            </button>
-          </div>
-        </div>
-
-        {/* Right Column - Preview */}
-        {portfolioHtml && (
-<<<<<<< HEAD
-          <div className={`md:col-span-2 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <div className="bg-gradient-to-br from-slate-800/40 to-slate-700/40 border border-gray-500/30 rounded-2xl overflow-hidden backdrop-blur-xl shadow-2xl hover:shadow-gray-500/20 transition-all duration-500 hover:border-gray-400/50">
-              <div className="bg-gradient-to-r from-gray-800/30 via-gray-700/20 to-gray-900/30 px-6 py-5 border-b border-gray-500/30 backdrop-blur-sm">
-                <div className="flex items-center justify-between">
-                  <p className="font-bold text-lg text-white flex items-center gap-2">
-                    <span className="text-2xl">📱</span>
-                    <span>Live Preview</span>
-                    <span className="text-sm font-normal px-3 py-1 bg-gray-500/30 rounded-full border border-gray-400/30">{theme}</span>
-                  </p>
-                  <div className="flex gap-2">
-                    <div className="w-3 h-3 rounded-full bg-gray-400 animate-pulse"></div>
-                    <div className="w-3 h-3 rounded-full bg-gray-500 animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                    <div className="w-3 h-3 rounded-full bg-gray-600 animate-pulse" style={{ animationDelay: '0.4s' }}></div>
-                  </div>
-                </div>
-=======
-          <div className="md:col-span-2">
-            <div className="bg-slate-800/30 border border-slate-600/30 rounded-2xl overflow-hidden backdrop-blur-sm shadow-2xl">
-              <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 px-6 py-4 border-b border-slate-600/30">
-                <p className="font-semibold text-gray-200">📱 Live Preview ({theme})</p>
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-              </div>
-              <div className="overflow-hidden rounded-b-2xl">
-                <PortfolioPreview html={portfolioHtml} theme={theme} key={theme} />
+        {/* MAIN / PREVIEW */}
+        <main className="main-area">
+          {!portfolioHtml ? (
+            <div className="empty-state">
+              <div className="empty-icon">{Icon.spark}</div>
+              <div className="empty-title">Your portfolio preview will appear here</div>
+              <p className="empty-sub">Upload your PDF resume and click Generate Portfolio to get started. Choose a template and theme to customize.</p>
+              <div className="empty-steps">
+                {['Upload PDF', 'Choose template', 'Click Generate', 'Pick a theme'].map((s, i) => (
+                  <div className="empty-step" key={i}><span className="step-num">{i+1}</span>{s}</div>
+                ))}
               </div>
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="preview-wrap">
+              <div className="preview-topbar">
+                <div className="browser-dots">
+                  <div className="browser-dot" style={{background:'rgba(255,255,255,0.12)'}}/> 
+                  <div className="browser-dot" style={{background:'rgba(255,255,255,0.08)'}}/> 
+                  <div className="browser-dot" style={{background:'rgba(0,217,255,0.3)'}}/>
+                </div>
+                <div className="preview-label">
+                  Live Preview · theme: <span>{theme}</span>
+                </div>
+                <div className="preview-actions">
+                  <button className="preview-action" onClick={() => setShowSaveModal(true)}>{Icon.save} Save</button>
+                  <button className="preview-action cyan" onClick={downloadHTML}>{Icon.dl} Download</button>
+                </div>
+              </div>
+              <div style={{position:'relative'}}>
+                {(isLoading || isApplyingTemplate) && (
+                  <div className="loading-over">
+                    <div className="loading-spinner"/>
+                    <div className="loading-text">{loadingMsg}</div>
+                  </div>
+                )}
+                <PortfolioPreview html={portfolioHtml} theme={theme} />
+              </div>
+            </div>
+          )}
+        </main>
       </div>
 
-      {/* Save Modal */}
+      {/* SAVE MODAL */}
       {showSaveModal && (
-<<<<<<< HEAD
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-gray-500/30 rounded-2xl p-8 max-w-md w-full shadow-2xl animate-scale-in">
-            <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-=======
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-blue-500/30 rounded-2xl p-8 max-w-md w-full shadow-2xl">
-            <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-              💾 Save Portfolio
-            </h2>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-300 mb-2">Title *</label>
-                <input
-                  type="text"
-                  value={saveTitle}
-                  onChange={(e) => setSaveTitle(e.target.value)}
-                  placeholder="My Awesome Portfolio"
-<<<<<<< HEAD
-                  className="w-full bg-slate-700 border border-slate-600 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-gray-400 transition"
-=======
-                  className="w-full bg-slate-700 border border-slate-600 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-blue-400 transition"
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-300 mb-2">Description (Optional)</label>
-                <textarea
-                  value={saveDescription}
-                  onChange={(e) => setSaveDescription(e.target.value)}
-                  placeholder="A brief description of this portfolio..."
-                  rows={3}
-<<<<<<< HEAD
-                  className="w-full bg-slate-700 border border-slate-600 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-gray-400 transition resize-none"
-=======
-                  className="w-full bg-slate-700 border border-slate-600 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-blue-400 transition resize-none"
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-                />
-              </div>
-
-              <div className="flex gap-3 mt-6">
-                <button
-                  onClick={() => {
-                    setShowSaveModal(false)
-                    setSaveTitle("")
-                    setSaveDescription("")
-                  }}
-<<<<<<< HEAD
-                  className="flex-1 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold transition transform hover:scale-105"
-=======
-                  className="flex-1 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold transition"
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={savePortfolio}
-<<<<<<< HEAD
-                  className="flex-1 py-3 rounded-xl bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-500 hover:to-gray-700 text-white font-semibold transition transform hover:scale-105 shadow-lg shadow-gray-500/30 hover:shadow-xl hover:shadow-gray-500/50"
-=======
-                  className="flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-semibold transition transform hover:scale-105"
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-                >
-                  Save
-                </button>
-              </div>
+        <div className="modal-overlay" onClick={() => setShowSaveModal(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-head">
+              <div className="modal-title">{Icon.save} Save Portfolio</div>
+              <button className="modal-close" onClick={() => setShowSaveModal(false)}>{Icon.close}</button>
+            </div>
+            <div className="modal-body">
+              <div><div className="modal-label">Title *</div><input className="modal-input" value={saveTitle} onChange={e => setSaveTitle(e.target.value)} placeholder="My Portfolio" /></div>
+              <div><div className="modal-label">Description (optional)</div><textarea className="modal-input" value={saveDescription} onChange={e => setSaveDescription(e.target.value)} placeholder="A brief description..." rows={3} style={{resize:'none'}}/></div>
+            </div>
+            <div className="modal-footer">
+              <button className="modal-btn ghost" onClick={() => setShowSaveModal(false)}>Cancel</button>
+              <button className="modal-btn primary" onClick={savePortfolio}>Save</button>
             </div>
           </div>
         </div>
       )}
 
-<<<<<<< HEAD
-      {/* Share Modal */}
+      {/* SHARE MODAL */}
       {showShareModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-gray-500/30 rounded-2xl p-8 max-w-md w-full shadow-2xl animate-scale-in">
-            <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-              🔗 Share Portfolio
-            </h2>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-300 mb-2">Share Link</label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={shareUrl}
-                    readOnly
-                    className="flex-1 bg-slate-700 border border-slate-600 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-gray-400 transition"
-                  />
-                  <button
-                    onClick={copyShareLink}
-                    className="px-4 py-3 rounded-xl bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-500 hover:to-gray-700 text-white font-semibold transition transform hover:scale-105 shadow-lg shadow-gray-500/30 hover:shadow-xl hover:shadow-gray-500/50 relative overflow-hidden group"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-gray-800 to-gray-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <span className="relative z-10 group-hover:animate-bounce">📋 Copy</span>
-                  </button>
+        <div className="modal-overlay" onClick={() => setShowShareModal(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-head">
+              <div className="modal-title">{Icon.share} Share Portfolio</div>
+              <button className="modal-close" onClick={() => setShowShareModal(false)}>{Icon.close}</button>
+            </div>
+            <div className="modal-body">
+              <div><div className="modal-label">Public link</div>
+                <div className="share-input-row">
+                  <input className="share-url" value={shareUrl} readOnly />
+                  <button className="preview-action" style={{flexShrink:0}} onClick={copyShareLink}>{Icon.copy} {copied ? "Copied!" : "Copy"}</button>
                 </div>
-                <p className="text-xs text-gray-400 mt-2">Anyone with this link can view your portfolio</p>
+                <div style={{fontSize:'0.72rem',color:'var(--muted)',marginTop:'0.4rem'}}>Anyone with this link can view your portfolio.</div>
               </div>
-
-              <div className="flex gap-3 mt-6">
-                <button
-                  onClick={() => {
-                    setShowShareModal(false)
-                    setShareUrl("")
-                  }}
-                  className="flex-1 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold transition transform hover:scale-105"
-                >
-                  Close
-                </button>
-              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="modal-btn ghost" onClick={() => setShowShareModal(false)}>Close</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Portfolios List Modal */}
+      {/* PORTFOLIOS MODAL */}
       {showPortfoliosList && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-gray-500/30 rounded-2xl p-8 max-w-3xl w-full max-h-[80vh] overflow-hidden shadow-2xl flex flex-col animate-slide-up">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-=======
-      {/* Portfolios List Modal */}
-      {showPortfoliosList && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-purple-500/30 rounded-2xl p-8 max-w-3xl w-full max-h-[80vh] overflow-hidden shadow-2xl flex flex-col">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-                📂 My Portfolios
-              </h2>
-              <button
-                onClick={() => setShowPortfoliosList(false)}
-                className="text-gray-400 hover:text-white text-2xl transition"
-              >
-                ✕
-              </button>
+        <div className="modal-overlay" onClick={() => setShowPortfoliosList(false)}>
+          <div className="modal portfolios-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-head">
+              <div className="modal-title">{Icon.folder} My Portfolios ({savedPortfolios.length})</div>
+              <button className="modal-close" onClick={() => setShowPortfoliosList(false)}>{Icon.close}</button>
             </div>
-
-            <div className="overflow-y-auto flex-1 space-y-3">
+            <div className="portfolios-list">
               {savedPortfolios.length === 0 ? (
-                <div className="text-center py-12 text-gray-400">
-                  <p className="text-4xl mb-4">📭</p>
-                  <p>No saved portfolios yet</p>
-                  <p className="text-sm mt-2">Generate and save your first portfolio!</p>
+                <div style={{textAlign:'center',padding:'3rem',color:'var(--muted)'}}>
+                  <div style={{fontSize:'2rem',marginBottom:'0.5rem'}}>📭</div>
+                  <div style={{fontWeight:600,color:'var(--muted2)',marginBottom:'0.3rem'}}>No saved portfolios yet</div>
+                  <div style={{fontSize:'0.78rem'}}>Generate and save your first portfolio!</div>
                 </div>
-              ) : (
-<<<<<<< HEAD
-                savedPortfolios.map((portfolio, index) => (
-                  <div
-                    key={portfolio._id}
-                    className={`bg-slate-700/50 border rounded-xl p-5 hover:border-gray-400/50 transition hover:scale-[1.02] hover:shadow-lg hover:shadow-gray-500/20 animate-fade-in-scale ${currentPortfolioId === portfolio._id ? "border-gray-400 animate-glow" : "border-slate-600/30"
-                      }`}
-                    style={{ animationDelay: `${index * 50}ms` }}
-=======
-                savedPortfolios.map((portfolio) => (
-                  <div
-                    key={portfolio._id}
-                    className={`bg-slate-700/50 border rounded-xl p-5 hover:border-purple-400/50 transition ${currentPortfolioId === portfolio._id ? "border-purple-400" : "border-slate-600/30"
-                      }`}
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <h3 className="font-bold text-lg text-white mb-1">{portfolio.title}</h3>
-                        {portfolio.description && (
-                          <p className="text-gray-400 text-sm mb-2">{portfolio.description}</p>
-                        )}
-<<<<<<< HEAD
-                        <div className="flex gap-3 text-xs text-gray-500 flex-wrap">
-                          <span>🎨 {portfolio.template || "modern"}</span>
-                          <span>🌈 {portfolio.theme || "light"}</span>
-                          <span>📅 {new Date(portfolio.createdAt).toLocaleDateString()}</span>
-                          {portfolio.isPublic && (
-                            <span className="text-gray-300 font-semibold">🔗 Public ({portfolio.shareCount || 0} views)</span>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="flex gap-2 flex-wrap">
-                        <button
-                          onClick={() => loadPortfolio(portfolio)}
-                          className="px-4 py-2 rounded-lg bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-500 hover:to-gray-700 text-white text-sm font-semibold transition transform hover:scale-105 shadow-md hover:shadow-lg"
-                        >
-                          Load
-                        </button>
-                        {portfolio.isPublic ? (
-                          <button
-                            onClick={() => unsharePortfolio(portfolio._id)}
-                            className="px-4 py-2 rounded-lg bg-gray-600/80 hover:bg-gray-700 text-white text-sm font-semibold transition transform hover:scale-105 shadow-md hover:shadow-lg"
-                          >
-                            🔒 Unshare
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => sharePortfolio(portfolio._id)}
-                            className="px-4 py-2 rounded-lg bg-gray-500/80 hover:bg-gray-600 text-white text-sm font-semibold transition transform hover:scale-105 shadow-md hover:shadow-lg"
-                          >
-                            🔗 Share
-                          </button>
-                        )}
-                        <button
-                          onClick={() => deletePortfolio(portfolio._id)}
-                          className="px-4 py-2 rounded-lg bg-gray-700/80 hover:bg-gray-800 text-white text-sm font-semibold transition transform hover:scale-105 hover:animate-shake shadow-md hover:shadow-lg"
-=======
-                        <div className="flex gap-3 text-xs text-gray-500">
-                          <span>🎨 {portfolio.template || "modern"}</span>
-                          <span>🌈 {portfolio.theme || "light"}</span>
-                          <span>📅 {new Date(portfolio.createdAt).toLocaleDateString()}</span>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => loadPortfolio(portfolio)}
-                          className="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white text-sm font-semibold transition transform hover:scale-105"
-                        >
-                          Load
-                        </button>
-                        <button
-                          onClick={() => deletePortfolio(portfolio._id)}
-                          className="px-4 py-2 rounded-lg bg-red-500/80 hover:bg-red-600 text-white text-sm font-semibold transition"
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-                        >
-                          Delete
-                        </button>
-                      </div>
+              ) : savedPortfolios.map(p => (
+                <div key={p._id} className={`p-card${currentPortfolioId === p._id ? ' active' : ''}`}>
+                  <div className="p-card-info">
+                    <div className="p-card-title">{p.title}</div>
+                    {p.description && <div className="p-card-desc">{p.description}</div>}
+                    <div className="p-card-meta">
+                      <span className="p-tag">{p.template || "modern"}</span>
+                      <span className="p-tag">{p.theme || "dark"}</span>
+                      <span className="p-tag">{new Date(p.createdAt).toLocaleDateString()}</span>
+                      {p.isPublic && <span className="p-tag" style={{color:'var(--cyan)'}}>🔗 Public</span>}
                     </div>
                   </div>
-                ))
-              )}
+                  <div className="p-actions">
+                    <button className="p-btn" onClick={() => loadPortfolio(p)}>{Icon.eye} Load</button>
+                    {p.isPublic
+                      ? <button className="p-btn" onClick={() => unsharePortfolio(p._id)}>{Icon.lock} Unshare</button>
+                      : <button className="p-btn" onClick={() => sharePortfolio(p._id)}>{Icon.share} Share</button>}
+                    <button className="p-btn danger" onClick={() => deletePortfolio(p._id)}>{Icon.trash}</button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       )}
-<<<<<<< HEAD
 
-      {/* CSS Animations */}
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) translateX(0px); }
-          50% { transform: translateY(-20px) translateX(10px); }
-        }
-
-        @keyframes float-delayed {
-          0%, 100% { transform: translateY(0px) translateX(0px); }
-          50% { transform: translateY(-30px) translateX(-15px); }
-        }
-
-        @keyframes float-slow {
-          0%, 100% { transform: translateY(0px) translateX(0px); }
-          50% { transform: translateY(-15px) translateX(20px); }
-        }
-
-        @keyframes gradient {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
-
-        @keyframes pulse-slow {
-          0%, 100% { opacity: 0.2; transform: scale(1); }
-          50% { opacity: 0.4; transform: scale(1.05); }
-        }
-
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes fade-in {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-
-        @keyframes slide-down {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        /* NEW ANIMATIONS */
-        @keyframes shimmer {
-          0% { background-position: -1000px 0; }
-          100% { background-position: 1000px 0; }
-        }
-
-        @keyframes bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
-        }
-
-        @keyframes rotate {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-
-        @keyframes scale-in {
-          from {
-            opacity: 0;
-            transform: scale(0.8);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-
-        @keyframes slide-in-left {
-          from {
-            opacity: 0;
-            transform: translateX(-50px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-
-        @keyframes slide-in-right {
-          from {
-            opacity: 0;
-            transform: translateX(50px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-
-        @keyframes glow {
-          0%, 100% {
-            box-shadow: 0 0 20px rgba(107, 114, 128, 0.4),
-                        0 0 40px rgba(107, 114, 128, 0.2);
-          }
-          50% {
-            box-shadow: 0 0 30px rgba(107, 114, 128, 0.6),
-                        0 0 60px rgba(107, 114, 128, 0.3);
-          }
-        }
-
-        @keyframes ripple {
-          0% {
-            transform: scale(0);
-            opacity: 1;
-          }
-          100% {
-            transform: scale(4);
-            opacity: 0;
-          }
-        }
-
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-5px); }
-          75% { transform: translateX(5px); }
-        }
-
-        @keyframes heartbeat {
-          0%, 100% { transform: scale(1); }
-          10%, 30% { transform: scale(1.1); }
-          20%, 40% { transform: scale(1); }
-        }
-
-        @keyframes slide-up {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes fade-in-scale {
-          from {
-            opacity: 0;
-            transform: scale(0.95);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
-        }
-
-        .animate-float-delayed {
-          animation: float-delayed 8s ease-in-out infinite;
-        }
-
-        .animate-float-slow {
-          animation: float-slow 10s ease-in-out infinite;
-        }
-
-        .animate-gradient {
-          background-size: 300% 300%;
-          animation: gradient 6s ease infinite;
-        }
-
-        .bg-300\\% {
-          background-size: 300% 300%;
-        }
-
-        .animate-pulse-slow {
-          animation: pulse-slow 4s ease-in-out infinite;
-        }
-
-        .animate-fade-in-up {
-          animation: fade-in-up 0.8s ease-out forwards;
-        }
-
-        .animate-fade-in {
-          animation: fade-in 0.5s ease-out forwards;
-        }
-
-        .animate-slide-down {
-          animation: slide-down 0.3s ease-out forwards;
-        }
-
-        .animate-shimmer {
-          background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(255, 255, 255, 0.2),
-            transparent
-          );
-          background-size: 1000px 100%;
-          animation: shimmer 2s infinite;
-        }
-
-        .animate-bounce {
-          animation: bounce 2s ease-in-out infinite;
-        }
-
-        .animate-rotate {
-          animation: rotate 2s linear infinite;
-        }
-
-        .animate-scale-in {
-          animation: scale-in 0.5s ease-out forwards;
-        }
-
-        .animate-slide-in-left {
-          animation: slide-in-left 0.6s ease-out forwards;
-        }
-
-        .animate-slide-in-right {
-          animation: slide-in-right 0.6s ease-out forwards;
-        }
-
-        .animate-glow {
-          animation: glow 2s ease-in-out infinite;
-        }
-
-        .animate-shake {
-          animation: shake 0.5s ease-in-out;
-        }
-
-        .animate-heartbeat {
-          animation: heartbeat 1.5s ease-in-out infinite;
-        }
-
-        .animate-slide-up {
-          animation: slide-up 0.6s ease-out forwards;
-        }
-
-        .animate-fade-in-scale {
-          animation: fade-in-scale 0.4s ease-out forwards;
-        }
-
-        /* Custom Scrollbar */
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(51, 65, 85, 0.3);
-          border-radius: 10px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: linear-gradient(to bottom, #6b7280, #374151);
-          border-radius: 10px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(to bottom, #4b5563, #1f2937);
-        }
-
-        /* Theme Selector Dropdown Styling */
-        select option {
-          background-color: #334155 !important;
-          color: white !important;
-          padding: 10px !important;
-          font-weight: 600 !important;
-        }
-
-        select optgroup {
-          background-color: #1e293b !important;
-          color: #9ca3af !important;
-          font-weight: 700 !important;
-          padding: 8px !important;
-        }
-
-        select option:hover {
-          background-color: #475569 !important;
-        }
-
-        select option:checked {
-          background-color: #4b5563 !important;
-          color: white !important;
-        }
-      `}</style>
-
-
-      {/* Change Password Modal */}
-      {showPasswordModal && (
-        <ChangePasswordModal
-          onClose={() => setShowPasswordModal(false)}
-        />
-      )}
-
-      {/* Account Management Modal */}
+      {/* ACCOUNT MODAL */}
       {showAccountModal && (
-        <AccountManagementModal
-          userName={userName}
-          userEmail={userEmail}
+        <AccountManagementModal userName={userName} userEmail={userEmail}
           onClose={() => setShowAccountModal(false)}
-          onUpdate={(newName, newEmail) => {
-            setUserName(newName)
-            setUserEmail(newEmail)
-          }}
-        />
+          onUpdate={(n, e) => { setUserName(n); setUserEmail(e) }} />
       )}
-    </main>
+    </>
   )
 }
 
-
-
-// Account Management Modal Component
+/* ─── ACCOUNT MODAL ──────────────────────────────────── */
 const AccountManagementModal = ({ userName, userEmail, onClose, onUpdate }) => {
   const [name, setName] = useState(userName)
   const [email, setEmail] = useState(userEmail)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
+  const [msg, setMsg] = useState({ type: "", text: "" })
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-    setSuccess('')
-
-    if (!name.trim()) {
-      setError('Name is required')
-      return
-    }
-
-    if (!email.trim() || !email.includes('@')) {
-      setError('Valid email is required')
-      return
-    }
-
+    e.preventDefault(); setMsg({ type: "", text: "" })
+    if (!name.trim()) return setMsg({ type: "err", text: "Name is required" })
+    if (!email.trim() || !email.includes("@")) return setMsg({ type: "err", text: "Valid email is required" })
     setLoading(true)
     try {
-      const token = localStorage.getItem('token')
-      const res = await fetch('http://localhost:5000/api/user/update-profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+      const re = await fetch("http://localhost:5000/api/user/update-profile", {
+        method: "PUT", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ name, email })
       })
-
-      const data = await res.json()
-
-      if (res.ok) {
-        // Update local storage
-        const userData = { name, email }
-        localStorage.setItem('user', JSON.stringify(userData))
-
-        // Update parent component state
-        onUpdate(name, email)
-
-        setSuccess('Profile updated successfully!')
-        setTimeout(() => {
-          onClose()
-        }, 1500)
-      } else {
-        setError(data.message || 'Failed to update profile')
-      }
-    } catch (error) {
-      console.error('Error updating profile:', error)
-      setError('Failed to update profile')
-    } finally {
-      setLoading(false)
-    }
+      const data = await re.json()
+      if (re.ok) {
+        localStorage.setItem("user", JSON.stringify({ name, email }))
+        onUpdate(name, email); setMsg({ type: "ok", text: "Profile updated!" })
+        setTimeout(onClose, 1200)
+      } else { setMsg({ type: "err", text: data.message || "Failed to update" }) }
+    } catch (_) { setMsg({ type: "err", text: "Failed to update profile" }) }
+    finally { setLoading(false) }
   }
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 animate-fade-in" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full animate-scale-in" onClick={(e) => e.stopPropagation()}>
-        <div className="flex justify-between items-center p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-800">👤 My Account</h2>
-          <button className="text-gray-400 hover:text-gray-600 text-2xl" onClick={onClose}>✕</button>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-head">
+          <div className="modal-title">My Account</div>
+          <button className="modal-close" onClick={onClose}><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
         </div>
-
         <form onSubmit={handleSubmit}>
-          <div className="p-6 space-y-4">
-            {error && <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl">{error}</div>}
-            {success && <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-xl">{success}</div>}
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                placeholder="Enter your name"
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-gray-500 focus:outline-none transition"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                placeholder="Enter your email"
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-gray-500 focus:outline-none transition"
-              />
-            </div>
-
-            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <span>📅</span>
-                <span>Member since: {new Date().toLocaleDateString()}</span>
-              </div>
-            </div>
+          <div className="modal-body">
+            {msg.text && <div style={{padding:'8px 12px',borderRadius:8,fontSize:'0.8rem',background:msg.type==='ok'?'rgba(34,197,94,0.08)':'rgba(239,68,68,0.08)',border:`1px solid ${msg.type==='ok'?'rgba(34,197,94,0.2)':'rgba(239,68,68,0.2)'}`,color:msg.type==='ok'?'#86efac':'#fca5a5'}}>{msg.text}</div>}
+            <div><div className="modal-label">Full name</div><input className="modal-input" value={name} onChange={e => setName(e.target.value)} /></div>
+            <div><div className="modal-label">Email</div><input className="modal-input" type="email" value={email} onChange={e => setEmail(e.target.value)} /></div>
           </div>
-
-          <div className="flex gap-3 p-6 border-t border-gray-200">
-            <button type="button" className="flex-1 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold transition" onClick={onClose}>Cancel</button>
-            <button type="submit" className="flex-1 py-3 rounded-xl bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-500 hover:to-gray-700 text-white font-semibold transition shadow-lg" disabled={loading}>
-              {loading ? 'Updating...' : 'Update Profile'}
-            </button>
+          <div className="modal-footer">
+            <button type="button" className="modal-btn ghost" onClick={onClose}>Cancel</button>
+            <button type="submit" className="modal-btn primary" disabled={loading}>{loading ? "Saving..." : "Save changes"}</button>
           </div>
         </form>
       </div>
     </div>
   )
 }
-
-// Change Password Modal Component
-const ChangePasswordModal = ({ onClose }) => {
-  const [currentPassword, setCurrentPassword] = useState('')
-  const [newPassword, setNewPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-
-    if (newPassword !== confirmPassword) {
-      setError('New passwords do not match')
-      return
-    }
-
-    if (newPassword.length < 6) {
-      setError('Password must be at least 6 characters long')
-      return
-    }
-
-    setLoading(true)
-    try {
-      const token = localStorage.getItem('token')
-      const res = await fetch('http://localhost:5000/api/user/change-password', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ currentPassword, newPassword })
-      })
-
-      const data = await res.json()
-
-      if (res.ok) {
-        alert('Password changed successfully!')
-        onClose()
-      } else {
-        setError(data.message || 'Failed to change password')
-      }
-    } catch (error) {
-      console.error('Error changing password:', error)
-      setError('Failed to change password')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 animate-fade-in" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full animate-scale-in" onClick={(e) => e.stopPropagation()}>
-        <div className="flex justify-between items-center p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-800">🔐 Change Password</h2>
-          <button className="text-gray-400 hover:text-gray-600 text-2xl" onClick={onClose}>✕</button>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className="p-6 space-y-4">
-            {error && <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl">{error}</div>}
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Current Password</label>
-              <input
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                required
-                placeholder="Enter current password"
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-gray-500 focus:outline-none transition"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">New Password</label>
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                required
-                placeholder="Enter new password"
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-gray-500 focus:outline-none transition"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Confirm New Password</label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                placeholder="Confirm new password"
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-gray-500 focus:outline-none transition"
-              />
-            </div>
-          </div>
-
-          <div className="flex gap-3 p-6 border-t border-gray-200">
-            <button type="button" className="flex-1 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold transition" onClick={onClose}>Cancel</button>
-            <button type="submit" className="flex-1 py-3 rounded-xl bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-500 hover:to-gray-700 text-white font-semibold transition shadow-lg" disabled={loading}>
-              {loading ? 'Changing...' : 'Change Password'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  )
-}
-
-
-=======
-    </main>
-  )
-}
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970

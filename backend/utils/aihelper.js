@@ -1,545 +1,298 @@
 const { GoogleGenAI } = require("@google/genai");
-<<<<<<< HEAD
+const Groq = require("groq-sdk");
 const dotenv = require("dotenv");
+const { PORTFOLIO_BASE_CSS } = require("./portfolioBaseTemplate");
 dotenv.config();
 
-const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
+// ─────────────────────────────────────────────
+// CONFIG
+// ─────────────────────────────────────────────
+const GEMINI_PRIMARY    = "gemini-2.0-flash";
+const GEMINI_FALLBACK   = "gemini-2.0-flash-lite";
+const GROQ_MODEL        = "llama-3.3-70b-versatile"; // Free, no daily quota issues
 
-async function generatePortfolio(resumeText, existingHtml = null, mode = "new", template = "modern") {
-   const modePrompt = mode === "update"
-      ? "Improve and refine the existing portfolio design while keeping the same content structure."
-      : `Transform this resume into a STUNNING, PROFESSIONAL personal portfolio website.`
+// Initialize Gemini SDK (only if key is available)
+const ai = process.env.GOOGLE_API_KEY
+    ? new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY })
+    : null;
 
-   const existingContext = existingHtml
-      ? `\n\nExisting Portfolio HTML (refine this):\n${existingHtml}`
-      : ""
-
-   const prompt = `
-You are an EXPERT web designer. Create a BEAUTIFUL, PROFESSIONAL portfolio website.
-
-${modePrompt}
-
-🎨 CRITICAL DESIGN REQUIREMENTS:
-
-1. COMPLETE HTML STRUCTURE:
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        :root {
-            --bg-color: #ffffff;
-            --text-color: #2c3e50;
-            --primary-color: #ff6b35;
-            --secondary-color: #f8f9fa;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-        }
-        
-        /* Navigation */
-        nav {
-            position: sticky;
-            top: 0;
-            background: white;
-            padding: 20px 0;
-            box-shadow: var(--shadow);
-            z-index: 1000;
-        }
-        
-        nav .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        nav .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-        
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 30px;
-        }
-        
-        nav a {
-            text-decoration: none;
-            color: var(--text-color);
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-        
-        nav a:hover {
-            color: var(--primary-color);
-        }
-        
-        .btn-chat {
-            background: var(--primary-color);
-            color: white;
-            padding: 10px 25px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: transform 0.3s;
-        }
-        
-        .btn-chat:hover {
-            transform: translateY(-2px);
-        }
-        
-        /* Hero Section */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-        }
-        
-        .hero .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            align-items: center;
-        }
-        
-        .hero-content h3 {
-            color: var(--primary-color);
-            font-size: 14px;
-            font-weight: 600;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-        }
-        
-        .hero-content h1 {
-            font-size: 56px;
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 20px;
-        }
-        
-        .hero-content h1 .highlight {
-            color: var(--primary-color);
-        }
-        
-        .hero-content p {
-            font-size: 18px;
-            color: #666;
-            margin-bottom: 30px;
-            line-height: 1.8;
-        }
-        
-        .hero-buttons {
-            display: flex;
-            gap: 20px;
-        }
-        
-        .btn-primary {
-            background: var(--primary-color);
-            color: white;
-            padding: 15px 35px;
-            border-radius: 6px;
-            border: 2px solid var(--primary-color);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
-        }
-        
-        .btn-secondary {
-            background: transparent;
-            color: var(--text-color);
-            padding: 15px 35px;
-            border-radius: 6px;
-            border: 2px solid var(--text-color);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-secondary:hover {
-            background: var(--text-color);
-            color: white;
-        }
-        
-        .hero-image {
-            position: relative;
-        }
-        
-        .hero-image img {
-            width: 100%;
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-        }
-        
-        .image-placeholder {
-            width: 100%;
-            height: 500px;
-            background: linear-gradient(135deg, var(--primary-color) 0%, #ff8c5a 100%);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 80px;
-        }
-        
-        /* Sections */
-        section {
-            padding: 80px 20px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .section-title {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-        
-        .section-title h2 {
-            font-size: 42px;
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
-        
-        .section-title p {
-            font-size: 18px;
-            color: #666;
-        }
-        
-        /* Skills Grid */
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-        }
-        
-        .skill-card {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s;
-        }
-        
-        .skill-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .skill-card h3 {
-            font-size: 20px;
-            margin-bottom: 10px;
-            color: var(--primary-color);
-        }
-        
-        /* Projects Grid */
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-        
-        .project-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s;
-        }
-        
-        .project-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .project-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-        
-        .project-info {
-            padding: 25px;
-        }
-        
-        .project-info h3 {
-            font-size: 22px;
-            margin-bottom: 10px;
-        }
-        
-        /* Footer */
-        footer {
-            background: #2c3e50;
-            color: white;
-            text-align: center;
-            padding: 40px 20px;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero .container {
-                grid-template-columns: 1fr;
-            }
-            
-            .hero-content h1 {
-                font-size: 36px;
-            }
-            
-            nav ul {
-                display: none;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Navigation -->
-    <nav>
-        <div class="container">
-            <div class="logo">PORTFOLIO</div>
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#skills">Skills</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-            <button class="btn-chat">Let's Chat</button>
-        </div>
-    </nav>
-    
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="container">
-            <div class="hero-content">
-                <h3>WELCOME TO MY WORLD</h3>
-                <h1>Hi, I'm <span class="highlight">[Name]</span></h1>
-                <h1>[Job Title]</h1>
-                <p>[Professional description from resume]</p>
-                <div class="hero-buttons">
-                    <button class="btn-primary">Hire Me Now</button>
-                    <button class="btn-secondary">View My Work</button>
-                </div>
-            </div>
-            <div class="hero-image">
-                <div class="image-placeholder">👨‍💻</div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Add more sections based on resume data -->
-    
-</body>
-</html>
-
-2. USE THIS EXACT STRUCTURE AND STYLING
-3. Replace [Name], [Job Title], etc. with actual data from resume
-4. Add sections ONLY if data exists in resume
-5. Keep the professional, clean design
-6. Use the color variables (--bg-color, --text-color, --primary-color)
-=======
-
-const ai = new GoogleGenAI({ apiKey: "AIzaSyCtuuAoRHAg9xMgMeR1mlzGqcCZajNSWGg" });
-
-async function generatePortfolio(resumeText, existingHtml = null, mode = "new", template = "modern") {
-  const templatePrompts = {
-    modern: "Use a modern, clean design with gradient backgrounds, smooth animations, and glassmorphism effects.",
-    minimal: "Create a minimal, elegant design focusing on typography and whitespace.",
-    creative: "Design a bold, creative portfolio with unique layouts and vibrant styling.",
-    professional: "Build a professional corporate portfolio emphasizing credentials and expertise.",
-    dark: "Create a sleek dark-themed portfolio perfect for tech professionals.",
-    startup: "Design a modern tech startup aesthetic with energetic visuals.",
-  }
-
-  const modePrompt = mode === "update" 
-    ? "Improve and refine the existing portfolio design while keeping the same content structure."
-    : `Convert the following resume into a PREMIUM, visually impressive personal portfolio website. ${templatePrompts[template] || templatePrompts.modern}`
-
-  const existingContext = existingHtml
-    ? `\n\nExisting Portfolio HTML (refine this):\n${existingHtml}`
-    : ""
-
-  const prompt = `
-${modePrompt}
-
-⚠️ CRITICAL COLOR RULE:
-- DO NOT use any hardcoded colors (no hex, rgb, named colors, etc)
-- Do NOT use inline styles for colors
-- Do NOT use color attributes
-- ONLY use CSS variables: var(--bg-color), var(--text-color), var(--primary-color)
-
-DESIGN REQUIREMENTS:
-- Hero section with name, title, tagline, CTA buttons
-- Modern layout with cards and spacing
-- Sections only if data exists
-- No fake data
-- Responsive
-- Output COMPLETE HTML document
-- Use <style> tag only
-- No inline styles
-- Use semantic HTML
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
-
-Resume Content:
-${resumeText}${existingContext}
-
-<<<<<<< HEAD
-IMPORTANT:
-- Return COMPLETE HTML with ALL the CSS shown above
-- Make it look EXACTLY like the example
-- Professional, clean, modern design
-- Use actual resume data
-- NO placeholder text if no data exists
-
-Return ONLY the HTML code.
-`;
-
-   const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: prompt,
-   });
-
-   let htmlContent = "";
-
-   if (response.candidates?.length) {
-      const parts = response.candidates[0].content?.parts || [];
-      htmlContent = parts
-         .filter((p) => p.text)
-         .map((p) => p.text)
-         .join("");
-   }
-
-   return htmlContent || response.text || "";
+// ─────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────
+function getApiKeySuffix(key) {
+    const k = key || process.env.GOOGLE_API_KEY || "";
+    return k.length >= 6 ? k.slice(-6) : k || "missing";
 }
 
-async function applyPortfolioTemplate(htmlContent, template) {
-   const prompt = `
-Transform this portfolio HTML to be more professional and attractive.
+function estimatePromptStats(prompt) {
+    const text = typeof prompt === "string" ? prompt : "";
+    return { chars: text.length, approxTokens: Math.ceil(text.length / 4) };
+}
 
-Current HTML:
-${htmlContent}
+function isQuotaError(error) {
+    const status = error?.status || error?.response?.status || null;
+    const msg = (error?.message || "").toLowerCase();
+    return status === 429 || msg.includes("quota") || msg.includes("resource_exhausted");
+}
 
-REQUIREMENTS:
-1. Keep all content and information
-2. Improve the styling to be more professional
-3. Add proper CSS with modern design
-4. Use clean, professional layout
-5. Add smooth transitions and hover effects
-6. Make it responsive
-7. Use CSS variables for colors (--bg-color, --text-color, --primary-color)
+function isNotFoundError(error) {
+    const status = error?.status || error?.response?.status || null;
+    const msg = (error?.message || "").toLowerCase();
+    return status === 404 || msg.includes("not found") || msg.includes("not supported");
+}
 
-Return ONLY the complete modified HTML code.
-`;
+function isBusyError(error) {
+    const status = error?.status || error?.response?.status || null;
+    const msg = (error?.message || "").toLowerCase();
+    return status === 503 || msg.includes("overloaded") || msg.includes("unavailable");
+}
 
-   const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: prompt,
-   });
+function extractRetryDelay(error) {
+    const details = error?.errorDetails || error?.details || [];
+    for (const d of details) {
+        if (d?.["@type"] === "type.googleapis.com/google.rpc.RetryInfo" && d.retryDelay) {
+            const match = String(d.retryDelay).match(/(\d+)/);
+            if (match) return Number(match[1]) * 1000;
+        }
+    }
+    const msg = error?.message || "";
+    const m = msg.match(/Please retry in ([\d.]+)s/i);
+    if (m) return Math.ceil(Number(m[1]) * 1000);
+    return 8000;
+}
 
-   let htmlContent_result = "";
+// ─────────────────────────────────────────────
+// GROQ GENERATOR (Primary — Free Tier, No Quota)
+// ─────────────────────────────────────────────
+async function generateWithGroq(prompt) {
+    const groqKey = process.env.GROQ_API_KEY;
+    if (!groqKey || groqKey === "your_groq_api_key_here") {
+        throw new Error("[Groq] API key not configured. Add GROQ_API_KEY to .env");
+    }
 
-   if (response.candidates?.length) {
-      const parts = response.candidates[0].content?.parts || [];
-      htmlContent_result = parts
-         .filter((p) => p.text)
-         .map((p) => p.text)
-         .join("");
-   }
+    const groq = new Groq({ apiKey: groqKey });
 
-   return htmlContent_result || response.text || "";
-=======
-Return ONLY the complete HTML code.
-`;
+    const stats = estimatePromptStats(prompt);
+    console.log(`[Groq] Request starting | model=${GROQ_MODEL} | chars=${stats.chars} | approxTokens=${stats.approxTokens}`);
 
-    const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: prompt,
+    const response = await groq.chat.completions.create({
+        model: GROQ_MODEL,
+        messages: [
+            {
+                role: "system",
+                content: "You are an expert frontend developer and UI/UX designer. When asked to generate a portfolio, you MUST output ONLY raw complete HTML code — no markdown, no code fences, no explanation. The HTML must be a single self-contained file with all CSS and JS embedded. Make it visually stunning with dark navy backgrounds, glassmorphism, animations, and modern design — never plain or minimal.",
+            },
+            { role: "user", content: prompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 8000,  // ~32,000 chars output — enough for full portfolio, stays within 12k TPM limit
     });
 
-    let htmlContent = "";
+    let text = response?.choices?.[0]?.message?.content || "";
 
-  if (response.candidates?.length) {
-    const parts = response.candidates[0].content?.parts || [];
-    htmlContent = parts
-      .filter((p) => p.text)
-      .map((p) => p.text)
-      .join("");
-  }
+    // Strip markdown code fences if model wrapped output in ```html ... ```
+    text = text.replace(/^```(?:html)?\s*/i, "").replace(/\s*```\s*$/i, "").trim();
 
-  return htmlContent || response.text || "";
+    console.log(`[Groq] Success | outputChars=${text.length}`);
+    return text;
+}
+
+// ─────────────────────────────────────────────
+// GEMINI GENERATOR (Fallback)
+// ─────────────────────────────────────────────
+async function generateWithGemini(modelName, prompt, retries = 1) {
+    if (!ai) {
+        throw new Error("[Gemini] No GOOGLE_API_KEY set. Skipping Gemini.");
+    }
+    const stats = estimatePromptStats(prompt);
+    console.log(`[Gemini] Request starting | model=${modelName} | key=***${getApiKeySuffix()} | chars=${stats.chars} | approxTokens=${stats.approxTokens}`);
+
+    try {
+        const response = await ai.models.generateContent({
+            model: modelName,
+            contents: [{ role: "user", parts: [{ text: prompt }] }],
+            config: { temperature: 0.7 },
+        });
+
+        if (typeof response.text === "string") return response.text;
+        const parts = response?.candidates?.[0]?.content?.parts;
+        if (parts && parts.length > 0) return parts[0].text;
+        return "";
+
+    } catch (error) {
+        // Quota error — don't retry, throw immediately for fallback chain
+        if (isQuotaError(error)) {
+            console.warn(`[Gemini] Quota exhausted for model=${modelName}. Skipping...`);
+            throw error;
+        }
+
+        // Not found — don't retry
+        if (isNotFoundError(error)) {
+            console.warn(`[Gemini] Model not found: ${modelName}. Skipping...`);
+            throw error;
+        }
+
+        // Service busy — retry once
+        if (isBusyError(error) && retries > 0) {
+            const delay = extractRetryDelay(error);
+            console.warn(`[Gemini] Service busy, retrying in ${Math.ceil(delay / 1000)}s...`);
+            await new Promise(res => setTimeout(res, delay));
+            return generateWithGemini(modelName, prompt, retries - 1);
+        }
+
+        console.error(`[Gemini] Error on model=${modelName}:`, error?.message || error);
+        throw error;
+    }
+}
+
+// ─────────────────────────────────────────────
+// MAIN GENERATOR — Groq first, Gemini fallback
+// ─────────────────────────────────────────────
+async function generateWithFallback(prompt) {
+    // 1️⃣ Try Groq first (free, no quota limits)
+    try {
+        return await generateWithGroq(prompt);
+    } catch (groqError) {
+        console.warn("[Groq] Failed:", groqError?.message || groqError);
+        console.warn("[Groq] Falling back to Gemini...");
+    }
+
+    // 2️⃣ Try Gemini primary
+    try {
+        return await generateWithGemini(GEMINI_PRIMARY, prompt);
+    } catch (e1) {
+        console.warn(`[Gemini] ${GEMINI_PRIMARY} failed. Trying ${GEMINI_FALLBACK}...`);
+    }
+
+    // 3️⃣ Try Gemini fallback
+    try {
+        return await generateWithGemini(GEMINI_FALLBACK, prompt);
+    } catch (e2) {
+        console.error("[AI] All providers failed. No more fallbacks.");
+        throw new Error("All AI providers exhausted. Please check your API keys or wait for quota reset.");
+    }
+}
+
+// ─────────────────────────────────────────────
+// SANITY CHECK
+// ─────────────────────────────────────────────
+async function runGeminiSanityCheck(modelName = GEMINI_PRIMARY) {
+    const prompt = "Reply with exactly: SANITY_OK";
+    console.log(`[Gemini] Running sanity check | model=${modelName}`);
+    try {
+        const result = await generateWithGemini(modelName, prompt, 0);
+        const trimmed = (result || "").trim();
+        console.log(`[Gemini] Sanity check | response="${trimmed}"`);
+        return { ok: true, model: modelName, response: trimmed };
+    } catch (error) {
+        console.error("[Gemini] Sanity check failed:", error?.message);
+        return { ok: false, model: modelName, error: error?.message };
+    }
+}
+
+// ─────────────────────────────────────────────
+// PORTFOLIO GENERATORS
+// ─────────────────────────────────────────────
+async function generatePortfolio(resumeText, existingHtml = null, mode = "new", template = "modern") {
+    const templatePrompts = {
+        modern:       "Create a STUNNING modern portfolio with deep navy/dark blue gradients (#0a192f to #1e3a5f), vibrant cyan/blue accents (#00d9ff, #1e90ff), glassmorphism cards with backdrop-blur, smooth scroll animations, floating glowing elements, professional hero section with large portrait area, premium spacing, and elegant hover effects with glow transitions.",
+        minimal:      "Design an ELEGANT minimal portfolio with sophisticated dark backgrounds, premium typography (Inter/Outfit from Google Fonts), generous whitespace, subtle cyan accent highlights, micro-animations, refined monochromatic palette with pops of color, and clean professional layouts.",
+        creative:     "Build a BOLD creative portfolio with dark navy backgrounds, vibrant neon gradients (cyan, purple, pink), asymmetric layouts, dynamic entrance animations, creative geometric shapes, eye-catching glowing elements, and artistic sections with WOW-factor visuals.",
+        professional: "Create a PREMIUM corporate portfolio with dark sophisticated theme (navy #0f172a), polished card layouts, cyan/blue professional accents, refined animations, executive presence, credibility-focused sections, elegant typography, and a stunning hero section with professional photo placement.",
+        dark:         "Design an ULTRA-SLEEK dark-themed portfolio with deep dark navy backgrounds (#0a192f, #0f1729), electric cyan neon accents (#00d9ff with glow), professional portrait hero section, glassmorphism effects, smooth gradients, cyberpunk aesthetics with glowing lines/borders, modern tech styling, hover glow effects, and premium developer vibes.",
+        startup:      "Build a HIGH-ENERGY tech startup portfolio with dark backgrounds, bold cyan/blue gradient overlays, dynamic scroll animations, modern glassmorphic cards with shadows, innovative asymmetric layouts, energetic neon accents, cutting-edge visual trends, and professional hero with portrait.",
+    };
+
+    const modePrompt = mode === "update"
+        ? "Dramatically improve and elevate the existing portfolio design with premium visual elements while keeping the same content structure."
+        : `Convert the following resume into an ABSOLUTELY STUNNING, PREMIUM, VISUALLY IMPRESSIVE personal portfolio website that will WOW anyone who sees it. ${templatePrompts[template] || templatePrompts.modern}`;
+
+    const existingContext = existingHtml
+        ? `\n\nExisting Portfolio HTML (elevate this to premium quality):\n${existingHtml}`
+        : "";
+
+    const prompt = `You are a web developer. Build a portfolio website using the EXACT CSS provided below — do NOT write any CSS yourself.
+
+OUTPUT RULES:
+- Output ONLY raw HTML starting with <!DOCTYPE html>. No markdown, no code fences, no explanation.
+- Always end with </body></html>.
+- Keep all resume facts accurate — do NOT invent data.
+- For icons use inline SVG only (no external URLs).
+
+PHOTO RULE: Scan resume for a photo/image URL (.jpg .png .webp). IF found → add <img src="[URL]" class="hero-photo" alt="Profile">. IF NOT found → no image element at all.
+
+USE THESE EXACT CSS CLASSES (already styled for you):
+- Nav: <nav> with .nav-logo and <ul class="nav-links">
+- Hero: <section id="hero"> with .hero-content, .hero-greeting, .hero-name, .hero-title, .hero-bio, .hero-buttons, .hero-socials, .social-link
+- Buttons: class="btn-primary" and class="btn-outline"
+- Sections: <section id="skills">, <section id="experience">, etc. Each needs <h2 class="section-title"> and <div class="section-line">
+- Cards: class="card" with .card-title, .card-subtitle, .card-meta inside
+- Skills: <div class="skills-grid"> with <span class="skill-tag"> for each skill
+- Projects: <div class="projects-grid"> with .card inside
+- Timeline: <div class="timeline"> with .timeline-item inside
+- Contact: <div class="contact-grid"> with .contact-item, .contact-label, .contact-value
+- Add class="reveal" to each section for scroll animations
+- Nav toggle: <button class="nav-toggle" onclick="this.parentNode.querySelector('.nav-links').classList.toggle('open')">☰</button>
+
+ADD THIS JS before </body>:
+<script>
+document.querySelectorAll('.reveal').forEach(el => {
+  new IntersectionObserver(([e]) => e.isIntersecting && e.target.classList.add('visible'), {threshold:0.15}).observe(el);
+});
+</script>
+
+THE CSS TO USE (inject this inside <head>):
+${PORTFOLIO_BASE_CSS}
+
+Resume:
+${resumeText}${existingContext}
+`;
+
+    return await generateWithFallback(prompt);
 }
 
 async function applyPortfolioTemplate(htmlContent, template) {
-  const templatePrompts = {
-    modern: "Transform this portfolio to a modern design with gradient backgrounds, smooth animations, and glassmorphism effects.",
-    minimal: "Redesign this portfolio to be minimal and elegant, focusing on typography and whitespace.",
-    creative: "Make this portfolio bold and creative with unique layouts and vibrant styling.",
-    professional: "Redesign this portfolio to have a professional corporate aesthetic.",
-    dark: "Transform this portfolio to use a sleek dark theme.",
-    startup: "Redesign this portfolio with a modern tech startup aesthetic.",
-  }
+    const templatePrompts = {
+        modern:       "Transform this portfolio to a STUNNING modern design with deep navy/dark blue backgrounds (#0a192f, #1e3a5f), vibrant cyan accents (#00d9ff, #1e90ff), glassmorphism cards with backdrop-filter and glow effects, smooth scroll animations, floating glowing elements, professional hero section with large portrait placement, premium spacing, and elegant hover effects with neon glows.",
+        minimal:      "Redesign this portfolio to be ELEGANTLY minimal with sophisticated dark navy backgrounds, premium Google Fonts (Inter/Outfit), generous whitespace, subtle cyan accent highlights, micro-animations, refined dark monochromatic palette with pops of cyan, sophisticated layouts, and perfect typography hierarchy.",
+        creative:     "Make this portfolio BOLD and WOW-FACTOR creative with dark navy backgrounds, vibrant multi-color neon gradients (cyan #00d9ff, purple, pink), unique asymmetric layouts, dynamic entrance animations, creative geometric shapes with glow effects, eye-catching visual elements, professional hero with portrait, and artistic flair.",
+        professional: "Redesign this portfolio with PREMIUM corporate dark aesthetic: dark navy theme (#0f172a), polished card layouts with glassmorphism, cyan/blue professional accents (#1e90ff), sophisticated hover animations with glows, professional hero section with large portrait area, elegant typography, credibility-focused sections, and executive presence.",
+        dark:         "Transform this portfolio to use an ULTRA-SLEEK dark theme with deep navy backgrounds (#0a192f, #0f1729), electric cyan neon accents (#00d9ff) with intense glow effects, professional portrait hero section with glowing geometric overlays, glassmorphism effects, cyberpunk aesthetics with glowing borders, tech-forward styling, hover glow animations, and premium developer vibes.",
+        startup:      "Redesign this portfolio with HIGH-ENERGY tech startup aesthetics: dark backgrounds with bold cyan/blue gradient overlays, dynamic scroll animations, modern glassmorphic card designs with neon shadows, innovative asymmetric layouts, energetic color combinations with cyan accents, professional hero with portrait, and cutting-edge visual trends.",
+    };
 
-  const prompt = `
-You are an expert web designer. Transform the following portfolio HTML to match the "${template}" style.
+    const prompt = `
+You are an elite web designer. Redesign the following portfolio HTML in the "${template}" style.
 
 ${templatePrompts[template]}
 
+Requirements:
+- Return ONLY complete HTML.
+- Preserve all existing content exactly: text, links, structure, and meaning.
+- Improve visuals, layout, responsiveness, typography, spacing, and interaction quality.
+- Use CSS variables for main theme colors: var(--bg-color), var(--text-color), var(--primary-color).
+- Prefer a premium dark aesthetic with gradients, subtle glow, glassmorphism, and clear section hierarchy.
+- Add tasteful motion: hero/background animation, reveal-on-scroll, polished hover states, animated buttons, and enhanced cards.
+- Keep performance reasonable and include prefers-reduced-motion support.
+- No external JS libraries.
+- Output should feel modern, impressive, and production-ready, but not overloaded.
+
 Current Portfolio HTML:
 ${htmlContent}
-
-CRITICAL RULES:
-- Keep all existing content (name, email, skills, projects, etc.)
-- DO NOT use any hardcoded colors (no hex, rgb, named colors)
-- ONLY use CSS variables: var(--bg-color), var(--text-color), var(--primary-color)
-- Maintain responsiveness
-- Return ONLY the complete modified HTML code
 `;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
-    contents: prompt,
-  });
-
-  let htmlContent_result = "";
-
-  if (response.candidates?.length) {
-    const parts = response.candidates[0].content?.parts || [];
-    htmlContent_result = parts
-      .filter((p) => p.text)
-      .map((p) => p.text)
-      .join("");
-  }
-
-  return htmlContent_result || response.text || "";
->>>>>>> 8704c0d2b0435dd392d86958e1c5065b0c1bc970
+    return await generateWithFallback(prompt);
 }
 
-module.exports = { generatePortfolio, applyPortfolioTemplate };
+// Keep backward compat exports
+async function generateWithRetry(modelName, prompt, retries = 1) {
+    return generateWithGemini(modelName, prompt, retries);
+}
+
+module.exports = {
+    generatePortfolio,
+    applyPortfolioTemplate,
+    generateWithRetry,
+    generateWithFallback,
+    runGeminiSanityCheck,
+};
