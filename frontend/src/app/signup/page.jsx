@@ -25,7 +25,7 @@ const Signup = () => {
     onSubmit: async (values) => {
       setLoading(true); setError("")
       try {
-        const response = await fetch("http://localhost:5000/api/auth/signup", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signup`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name: values.name, email: values.email, password: values.password }),
@@ -43,7 +43,7 @@ const Signup = () => {
     },
   })
 
-  const handleGoogleSignup = () => { window.location.href = "http://localhost:5000/api/auth/google" }
+  const handleGoogleSignup = () => { window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/google` }
 
   return (
     <>

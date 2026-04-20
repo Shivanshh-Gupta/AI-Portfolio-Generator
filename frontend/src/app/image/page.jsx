@@ -367,7 +367,7 @@ function ImageUploadComponent() {
     const formData = new FormData()
     formData.append("avatar", selectedImage)
     try {
-      const res = await fetch("http://localhost:5000/file/profile", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/file/profile`, {
         method: "POST",
         body: formData,
         headers: {
@@ -396,7 +396,7 @@ function ImageUploadComponent() {
     setLoadingMsg("Applying template... (AI is redesigning your portfolio)")
     setShowTemplates(false)
     try {
-      const res = await fetch("http://localhost:5000/file/apply-template", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/file/apply-template`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ html: portfolioHtml, template: templateName }),
@@ -434,7 +434,7 @@ function ImageUploadComponent() {
   const savePortfolio = async () => {
     if (!portfolioHtml || !saveTitle.trim()) return alert("Please enter a title")
     try {
-      const res = await fetch("http://localhost:5000/api/portfolio/save", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/portfolio/save`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ title: saveTitle, description: saveDescription, content: portfolioHtml, theme, template: selectedTemplate }),
@@ -449,7 +449,7 @@ function ImageUploadComponent() {
 
   const fetchPortfolios = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/portfolio/user", { headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` } })
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/portfolio/user`, { headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` } })
       if (res.ok) setSavedPortfolios(await res.json())
     } catch (_) {}
   }
@@ -462,13 +462,13 @@ function ImageUploadComponent() {
 
   const deletePortfolio = async (id) => {
     if (!confirm("Delete this portfolio?")) return
-    const re = await fetch(`http://localhost:5000/api/portfolio/delete/${id}`, { method: "DELETE", headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` } })
+    const re = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/portfolio/delete/${id}`, { method: "DELETE", headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` } })
     if (re.ok) { fetchPortfolios(); if (currentPortfolioId === id) setCurrentPortfolioId(null) }
     else alert("Failed to delete")
   }
 
   const sharePortfolio = async (id) => {
-    const re = await fetch(`http://localhost:5000/api/portfolio/share/${id}`, { method: "POST", headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` } })
+    const re = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/portfolio/share/${id}`, { method: "POST", headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` } })
     const data = await re.json()
     if (re.ok) { setShareUrl(`${window.location.origin}/shared/${data.shareToken}`); setShowShareModal(true); fetchPortfolios() }
     else alert(data.message || "Failed to share")
@@ -476,7 +476,7 @@ function ImageUploadComponent() {
 
   const unsharePortfolio = async (id) => {
     if (!confirm("Make this portfolio private?")) return
-    const re = await fetch(`http://localhost:5000/api/portfolio/unshare/${id}`, { method: "POST", headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` } })
+    const re = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/portfolio/unshare/${id}`, { method: "POST", headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` } })
     if (re.ok) { alert("Portfolio is now private"); fetchPortfolios() }
   }
 
@@ -802,7 +802,7 @@ const AccountManagementModal = ({ userName, userEmail, onClose, onUpdate }) => {
     if (!email.trim() || !email.includes("@")) return setMsg({ type: "err", text: "Valid email is required" })
     setLoading(true)
     try {
-      const re = await fetch("http://localhost:5000/api/user/update-profile", {
+      const re = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/update-profile`, {
         method: "PUT", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ name, email })
       })

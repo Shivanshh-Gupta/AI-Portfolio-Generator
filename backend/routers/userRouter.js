@@ -25,7 +25,7 @@ const authMiddleware = (req, res, next) => {
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'dummy_secret',
-  callbackURL: "http://localhost:5000/api/auth/google/callback"
+  callbackURL: `${process.env.BACKEND_URL}/api/auth/google/callback`
 },
   async (accessToken, refreshToken, profile, done) => {
     try {
@@ -149,7 +149,7 @@ router.get('/google',
 // GOOGLE OAUTH - Callback
 router.get('/google/callback',
   passport.authenticate('google', {
-    failureRedirect: 'http://localhost:3000/login',
+    failureRedirect: `${process.env.FRONTEND_URL}/login`,
     session: false
   }),
   (req, res) => {
@@ -162,14 +162,14 @@ router.get('/google/callback',
       );
 
       // Redirect to frontend with token
-      res.redirect(`http://localhost:3000/image?token=${token}&user=${encodeURIComponent(JSON.stringify({
+      res.redirect(`${process.env.FRONTEND_URL}/image?token=${token}&user=${encodeURIComponent(JSON.stringify({
         id: req.user._id,
         name: req.user.name,
         email: req.user.email
       }))}`);
     } catch (err) {
       console.log(err);
-      res.redirect('http://localhost:3000/login?error=auth_failed');
+      res.redirect(`${process.env.FRONTEND_URL}/login?error=auth_failed`);
     }
   }
 );

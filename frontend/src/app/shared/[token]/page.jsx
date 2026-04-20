@@ -16,7 +16,7 @@ export default function SharedPortfolioPage() {
     if (!token) return
     const fetch_ = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/portfolio/shared/${token}`)
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/portfolio/shared/${token}`)
         if (!res.ok) throw new Error("Portfolio not found or no longer public")
         setPortfolio(await res.json())
       } catch (err) {

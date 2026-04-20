@@ -208,7 +208,7 @@ const SettingsModal = ({ onClose, userEmail }) => {
     const loadPreferences = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch('http://localhost:5000/api/user/profile', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/profile`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -237,7 +237,7 @@ const SettingsModal = ({ onClose, userEmail }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/user/preferences', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/preferences`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -362,7 +362,7 @@ const ChangePasswordModal = ({ onClose }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/user/change-password', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/change-password`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -458,7 +458,7 @@ const FeedbackModal = ({ onClose }) => {
 
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/user/feedback', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/feedback`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
