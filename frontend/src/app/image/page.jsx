@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import PortfolioPreview from "@/components/PortfolioPreview"
 import { htmlThemes } from "@/config/htmlThemes"
@@ -8,7 +8,11 @@ import { portfolioTemplates } from "@/config/portfolioTemplates"
 import Link from "next/link"
 
 export default function ImagePage() {
-  return <ImageUploadComponent />
+  return (
+    <Suspense fallback={null}>
+      <ImageUploadComponent />
+    </Suspense>
+  )
 }
 
 /* ─── ICONS ─────────────────────────────────────────── */
